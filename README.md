@@ -13,6 +13,9 @@
 - MiniMax TTS 双角色接入：
   - 创建助理提问默认走 MiniMax TTS（无 Key 时回退浏览器 TTS）。
   - 数字人通话回复优先使用 MiniMax 复刻 `voice_id` 播报。
+- MiniMax 主对话模型接入：
+  - 通话回复主模型切换为 MiniMax `M2-her`（`/v1/text/chatcompletion_v2`）。
+  - 按官方消息结构组装 `system / user_system / group / sample_message_user / sample_message_ai / user`。
 - 电话式通话页：头像、通话计时、状态、实时转写、挂断。
 - 虚拟形象选择：
   - 采集最后一步支持手动选择虚拟形象。

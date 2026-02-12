@@ -70,6 +70,9 @@
 - 助理与数字人播报统一使用 MiniMax TTS 能力：
   - 创建助理：使用系统 voice_id。
   - 数字人：优先使用克隆后的 voice_id。
+- 对话主模型使用 MiniMax `M2-her`：
+  - 调用 `POST /v1/text/chatcompletion_v2`
+  - 消息上下文包含 TELOS 摘要与最近通话历史
 - 验收：
   - 通话中状态在聆听/思考/回答之间循环反馈。
 

@@ -1208,6 +1208,7 @@
       const MINIMAX_TTS_MODEL = "speech-2.5-hd";
       const MINIMAX_ASSISTANT_VOICE_ID = "male-qn-qingse";
       const MINIMAX_DIGITAL_FALLBACK_VOICE_ID = "male-qn-qingse";
+      const MINIMAX_CHAT_MODEL = "M2-her";
 
       const setupFlow = [
         {
@@ -1322,6 +1323,9 @@
           integration: {
             minimaxApiKey: ""
           },
+          chat: {
+            historyByContact: {}
+          },
           selfProfile: {
             id: "self",
             digitalId: "twin_self_001",
@@ -1381,6 +1385,24 @@
 
         if (saved.integration && typeof saved.integration === "object") {
           result.integration.minimaxApiKey = String(saved.integration.minimaxApiKey || "");
+        }
+
+        if (saved.chat && typeof saved.chat === "object") {
+          const rawHistory = saved.chat.historyByContact;
+          if (rawHistory && typeof rawHistory === "object") {
+            Object.entries(rawHistory).forEach(([contactId, turns]) => {
+              if (!Array.isArray(turns)) return;
+              const safeTurns = turns
+                .filter((item) => item && typeof item === "object")
+                .map((item) => ({
+                  role: item.role === "assistant" ? "assistant" : "user",
+                  content: String(item.content || "").slice(0, 800)
+                }))
+                .filter((item) => item.content)
+                .slice(-16);
+              result.chat.historyByContact[String(contactId)] = safeTurns;
+            });
+          }
         }
 
         if (saved.selfProfile && typeof saved.selfProfile === "object") {
@@ -2276,6 +2298,124 @@
         }
       }
 
+      function getContactHistory(contactId) {
+        return state.chat.historyByContact[contactId] || [];
+      }
+
+      function appendContactTurn(contactId, role, content) {
+        const text = String(content || "").trim();
+        if (!text) return;
+        const safeRole = role === "assistant" ? "assistant" : "user";
+        const current = getContactHistory(contactId);
+        const next = [...current, { role: safeRole, content: text.slice(0, 800) }].slice(-16);
+        state.chat.historyByContact[contactId] = next;
+        saveState();
+      }
+
+      function buildMiniMaxChatMessages(contact, userText) {
+        const history = getContactHistory(contact.id).slice(-10);
+        const persona = state.model.personaSummary || "目标导向，先关键后扩展。";
+        const voice = state.model.voiceSummary || "表达清晰，节奏稳定。";
+        const style = styleLabels[state.selfProfile.style] || "平衡";
+        const intro = `你正在模拟用户本人的数字人，用中文语音电话风格回复。`;
+        const constraint = [
+          "输出要求：",
+          "1) 每次回复 1-3 句，先结论后建议。",
+          "2) 可执行、具体，不要泛泛而谈。",
+          "3) 语气与用户人格保持一致，避免机器人口吻。"
+        ].join("\n");
+
+        const systemPrompt = [
+          intro,
+          `人格摘要：${persona}`,
+          `语音风格：${voice}`,
+          `当前口吻偏好：${style}`,
+          constraint
+        ].join("\n");
+
+        const telosContext = questionStepIds
+          .map((id) => {
+            const flow = setupFlow.find((item) => item.id === id);
+            if (!flow) return "";
+            const answer = state.setup.answers[id] || "";
+            if (!answer.trim()) return "";
+            return `${flow.pillar}: ${answer.trim()}`;
+          })
+          .filter(Boolean)
+          .join("\n");
+
+        const messages = [
+          { role: "system", name: "数字人内核", content: systemPrompt },
+          {
+            role: "user_system",
+            name: "TELOS-摘要",
+            content: telosContext || "用户正在完成人格采集，优先给出稳健可执行建议。"
+          },
+          { role: "group", name: "场景", content: `电话对象: ${contact.name}` },
+          { role: "sample_message_user", name: "示例用户", content: "我现在很乱，不知道先做什么。" },
+          {
+            role: "sample_message_ai",
+            name: "示例数字人",
+            content: "先只选一件今天必须完成的事，给它 45 分钟完整专注，然后再看下一步。"
+          }
+        ];
+
+        history.forEach((turn) => {
+          messages.push({
+            role: turn.role === "assistant" ? "assistant" : "user",
+            name: turn.role === "assistant" ? "数字人" : "用户",
+            content: turn.content
+          });
+        });
+
+        messages.push({
+          role: "user",
+          name: "用户",
+          content: String(userText || "").trim()
+        });
+
+        return messages;
+      }
+
+      async function callMiniMaxChat(contact, userText) {
+        const apiKey = getMiniMaxApiKey();
+        if (!apiKey) throw new Error("missing_api_key");
+
+        const payload = {
+          model: MINIMAX_CHAT_MODEL,
+          stream: false,
+          temperature: 0.7,
+          top_p: 0.9,
+          max_completion_tokens: 220,
+          messages: buildMiniMaxChatMessages(contact, userText)
+        };
+
+        const response = await fetch(`${MINIMAX_BASE_URL}/text/chatcompletion_v2`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await parseJsonSafe(response);
+        const statusCode = data?.base_resp?.status_code;
+        if (!response.ok || (typeof statusCode === "number" && statusCode !== 0)) {
+          const message = data?.base_resp?.status_msg || data?.message || `对话失败 (${response.status})`;
+          throw new Error(message);
+        }
+
+        const choice = data?.choices?.[0];
+        if (choice?.message?.output_sensitive) {
+          return "这个话题我先不展开，我们回到可执行的下一步。";
+        }
+
+        const reply = String(choice?.message?.content || "").trim();
+        if (!reply) throw new Error("M2-her 未返回有效内容");
+        return reply;
+      }
+
       function createMiniMaxVoiceId() {
         const seed = state.selfProfile.name.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10) || "VoiceTwin";
         return `V${seed}${Date.now()}`;
@@ -2724,7 +2864,7 @@
         "我想要更稳的执行节奏。"
       ];
 
-      const replySeed = {
+      const fallbackReplySeed = {
         self: [
           "先把最关键的一步跑通，再做体验优化。",
           "你现在最需要的是确定优先级，然后连续推进。"
@@ -2743,11 +2883,14 @@
         ]
       };
 
-      function generateReply(userText, contact) {
+      let callGeneratingReply = false;
+      const callPendingInputs = [];
+
+      function generateFallbackReply(userText, contact) {
         const clean = (userText || "").trim();
         const persona = state.model.personaSummary || "以目标为导向，先关键后优化。";
         const voice = state.model.voiceSummary || "语气平稳，结构清晰。";
-        const list = replySeed[contact.id] || replySeed.self;
+        const list = fallbackReplySeed[contact.id] || fallbackReplySeed.self;
 
         if (!clean) {
           return `${list[0]} ${persona}`;
@@ -2762,6 +2905,19 @@
           return `给你一个表达模板：一句结论 + 两条理由 + 一步行动。${voice}`;
         }
         return `${list[Math.floor(Math.random() * list.length)]} ${persona}`;
+      }
+
+      async function generateModelReply(userText, contact) {
+        const apiKey = getMiniMaxApiKey();
+        if (!apiKey) {
+          return generateFallbackReply(userText, contact);
+        }
+
+        try {
+          return await callMiniMaxChat(contact, userText);
+        } catch {
+          return generateFallbackReply(userText, contact);
+        }
       }
 
       function clearCallTimers() {
@@ -2789,7 +2945,7 @@
       function scheduleSilencePing() {
         clearTimeout(callSilenceTimer);
         callSilenceTimer = setTimeout(() => {
-          if (!callActive || speakingNow || !activeContact) return;
+          if (!callActive || speakingNow || !activeContact || callGeneratingReply || callPendingInputs.length) return;
           const reminder = "我在听，你可以继续说。";
           callCaption.textContent = `实时转写: ${reminder}`;
           speakText(reminder, {
@@ -2809,12 +2965,32 @@
         }, 9000);
       }
 
-      function respondToUser(userText) {
+      function queueUserInput(userText) {
+        const text = String(userText || "").trim();
+        if (!text) return;
+        callPendingInputs.push(text);
+        processReplyQueue();
+      }
+
+      async function processReplyQueue() {
         if (!callActive || !activeContact) return;
-        const response = generateReply(userText, activeContact);
+        if (callGeneratingReply || speakingNow) return;
+        if (!callPendingInputs.length) return;
+
+        const userText = callPendingInputs.shift();
+        if (!userText) return;
+        callGeneratingReply = true;
+
+        appendContactTurn(activeContact.id, "user", userText);
+        setAvatarState(callAvatar, callAvatarMeta, "thinking", `${activeContact.name} 正在思考`);
+        callStateEl.textContent = `${MINIMAX_CHAT_MODEL} 推理中`;
+        callCaption.textContent = `实时转写: ${userText}`;
+
+        const response = await generateModelReply(userText, activeContact);
+        appendContactTurn(activeContact.id, "assistant", response);
         callCaption.textContent = `实时转写: ${response}`;
 
-        speakText(response, {
+        await speakText(response, {
           speaker: "digital",
           rate: 1,
           onstart: () => {
@@ -2826,16 +3002,25 @@
             speakingNow = false;
             setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
             callStateEl.textContent = "正在聆听你说话";
-            scheduleSilencePing();
           }
         });
+
+        callGeneratingReply = false;
+        scheduleSilencePing();
+        if (callPendingInputs.length) {
+          processReplyQueue();
+        }
+      }
+
+      function respondToUser(userText) {
+        queueUserInput(userText);
       }
 
       function startCallFallback() {
         let idx = 0;
         clearInterval(callFallbackTimer);
         callFallbackTimer = setInterval(() => {
-          if (!callActive || speakingNow) return;
+          if (!callActive || speakingNow || callGeneratingReply || callPendingInputs.length) return;
           const prompt = fallbackUserPrompts[idx % fallbackUserPrompts.length];
           idx += 1;
           callCaption.textContent = `实时转写: ${prompt}`;
@@ -2908,6 +3093,8 @@
 
       function startCallSession() {
         if (!activeContact || callActive) return;
+        callPendingInputs.length = 0;
+        callGeneratingReply = false;
         callActive = true;
         ensureMic();
 
@@ -2944,6 +3131,8 @@
 
       function stopCallSession() {
         if (!callActive) {
+          callPendingInputs.length = 0;
+          callGeneratingReply = false;
           stopActiveTts();
           clearCallTimers();
           stopCallRecognition();
@@ -2953,6 +3142,8 @@
 
         callActive = false;
         speakingNow = false;
+        callPendingInputs.length = 0;
+        callGeneratingReply = false;
         clearCallTimers();
         stopCallRecognition();
         stopActiveTts();
@@ -2969,6 +3160,8 @@
       function openCall(contactId) {
         const target = getAllContacts().find((item) => item.id === contactId);
         if (!target) return;
+        callPendingInputs.length = 0;
+        callGeneratingReply = false;
         activeContact = target;
         showScreen("call");
         callTitle.textContent = `与 ${target.name} 通话中`;
