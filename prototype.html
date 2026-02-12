@@ -237,6 +237,24 @@
         padding: 14px;
       }
 
+      .setup-stage {
+        display: grid;
+        gap: 2px;
+        margin-bottom: 10px;
+      }
+
+      .setup-stage strong {
+        font-family: "Orbitron", "Noto Sans SC", sans-serif;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: #cce0ff;
+      }
+
+      .setup-stage small {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
       .question-text {
         margin: 0;
         min-height: 128px;
@@ -252,11 +270,117 @@
         gap: 7px;
       }
 
+      .setup-progress-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
       .setup-progress span {
         font-family: "Orbitron", "Noto Sans SC", sans-serif;
         font-size: 12px;
         letter-spacing: 0.08em;
         color: #b6cdf5;
+      }
+
+      .record-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(119, 158, 219, 0.34);
+        background: rgba(16, 27, 48, 0.75);
+        color: #acc6ea;
+        font-size: 10px;
+      }
+
+      .record-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #6f8cb8;
+      }
+
+      .record-dot.live {
+        background: #ff5b78;
+        box-shadow: 0 0 10px rgba(255, 91, 120, 0.45);
+        animation: recordPulse 1.1s ease-in-out infinite;
+      }
+
+      .avatar-picker {
+        margin-top: 10px;
+        border-top: 1px solid rgba(126, 166, 224, 0.2);
+        padding-top: 10px;
+      }
+
+      .avatar-options {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .avatar-option {
+        border: 1px solid rgba(123, 157, 214, 0.3);
+        border-radius: 12px;
+        background: rgba(15, 25, 45, 0.76);
+        padding: 8px;
+        display: grid;
+        justify-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .avatar-option.active {
+        border-color: rgba(94, 255, 189, 0.55);
+        box-shadow: 0 0 0 1px rgba(94, 255, 189, 0.25);
+      }
+
+      .avatar-chip {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        background: linear-gradient(145deg, var(--avatar-a, #87a8d6), var(--avatar-b, #6a84b0));
+        box-shadow: 0 4px 10px rgba(6, 11, 22, 0.42);
+      }
+
+      .avatar-option p {
+        margin: 0;
+        font-size: 10px;
+        color: #bdd1f0;
+      }
+
+      .avatar-ai-tools {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+      }
+
+      .mini-input {
+        border-radius: 10px;
+        border: 1px solid rgba(126, 160, 217, 0.32);
+        background: rgba(13, 22, 39, 0.82);
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+        padding: 9px;
+      }
+
+      .tiny-btn {
+        border: 0;
+        border-radius: 10px;
+        padding: 9px 12px;
+        font: inherit;
+        font-size: 12px;
+        color: #eef7ff;
+        background: linear-gradient(120deg, var(--blue), var(--violet));
+        cursor: pointer;
+      }
+
+      .hidden {
+        display: none !important;
       }
 
       .track {
@@ -754,6 +878,11 @@
         color: #a3b7d8;
       }
 
+      .audio-preview {
+        width: 100%;
+        margin-top: 8px;
+      }
+
       @keyframes spin {
         to {
           transform: rotate(360deg);
@@ -821,6 +950,18 @@
         }
       }
 
+      @keyframes recordPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.28);
+          opacity: 0.72;
+        }
+      }
+
       @media (max-width: 420px) {
         .phone-shell {
           border-radius: 30px;
@@ -863,9 +1004,32 @@
               </section>
 
               <section class="card setup-question-card">
+                <div class="setup-stage">
+                  <strong id="setup-stage-pillar">TELOS · MISSION</strong>
+                  <small id="setup-stage-ritual">仪式阶段 · 北极星点火</small>
+                </div>
                 <p class="question-text" id="setup-question">你最希望这个数字人长期帮你完成什么？</p>
+                <section class="avatar-picker hidden" id="avatar-picker">
+                  <div class="avatar-options" id="avatar-options"></div>
+                  <div class="avatar-ai-tools">
+                    <input
+                      class="mini-input"
+                      id="avatar-ai-prompt"
+                      type="text"
+                      placeholder="输入关键词（理性 / 温暖 / 锋利...）"
+                    />
+                    <button class="tiny-btn" id="avatar-ai-generate-btn">AI 生成</button>
+                  </div>
+                  <p class="form-note" id="avatar-ai-note">你也可以直接点选头像。</p>
+                </section>
                 <div class="setup-progress">
-                  <span id="setup-progress-text">1 / 4</span>
+                  <div class="setup-progress-head">
+                    <span id="setup-progress-text">1 / 8</span>
+                    <span class="record-badge" id="setup-recording-badge">
+                      <i class="record-dot" id="setup-record-dot"></i>
+                      <span id="setup-record-text">等待录音</span>
+                    </span>
+                  </div>
                   <div class="track"><div class="fill" id="setup-progress-fill" style="width: 25%"></div></div>
                 </div>
               </section>
@@ -1017,6 +1181,21 @@
                 <p class="form-note" id="share-result">可生成后分享。</p>
                 <button class="secondary-btn" id="settings-back-btn">返回通讯录</button>
               </section>
+
+              <section class="card">
+                <div class="form-head"><strong>MiniMax 声音复刻</strong></div>
+                <label class="form-label" for="minimax-api-key-input">MiniMax API Key</label>
+                <input
+                  class="text-input"
+                  id="minimax-api-key-input"
+                  type="password"
+                  placeholder="输入你的 MiniMax API Key"
+                />
+                <p class="form-note" id="minimax-voice-id">voice_id: 未生成</p>
+                <button class="primary-btn" id="minimax-clone-btn">使用当前采集音频复刻声音</button>
+                <p class="form-note" id="minimax-clone-status">未执行</p>
+                <audio class="audio-preview hidden" id="minimax-demo-audio" controls preload="none"></audio>
+              </section>
             </section>
           </div>
         </div>
@@ -1024,12 +1203,77 @@
     </div>
 
     <script>
-      const STORAGE_KEY = "voiceTwinState.v1";
-      const setupQuestions = [
-        "你最希望这个数字人长期帮你完成什么？",
-        "当目标冲突时，你通常怎么取舍？",
-        "请讲一次你主动调整策略的经历。",
-        "请用自然语速讲 40 秒，描述你理想的一天。"
+      const STORAGE_KEY = "voiceTwinState.v2";
+      const MINIMAX_BASE_URL = "https://api.minimax.io/v1";
+
+      const setupFlow = [
+        {
+          id: "mission",
+          type: "question",
+          pillar: "MISSION",
+          ritual: "北极星点火",
+          question: "十年后回看今天，你最希望这个数字人持续帮你守住什么？"
+        },
+        {
+          id: "goals",
+          type: "question",
+          pillar: "GOALS",
+          ritual: "目标锚定",
+          question: "接下来 90 天，你最关键的三个目标分别是什么？"
+        },
+        {
+          id: "beliefs",
+          type: "question",
+          pillar: "BELIEFS",
+          ritual: "价值校准",
+          question: "当效率、关系、长期价值冲突时，你通常优先守哪一条原则？"
+        },
+        {
+          id: "models",
+          type: "question",
+          pillar: "MODELS",
+          ritual: "认知映射",
+          question: "你做重要决策时，最依赖的判断框架或思考模型是什么？"
+        },
+        {
+          id: "strategies",
+          type: "question",
+          pillar: "STRATEGIES",
+          ritual: "策略注入",
+          question: "面对复杂任务，你会如何拆解优先级并推进执行？"
+        },
+        {
+          id: "narratives",
+          type: "question",
+          pillar: "NARRATIVES",
+          ritual: "叙事封存",
+          question: "请讲一个你从挫折走出来并重建节奏的真实经历。"
+        },
+        {
+          id: "challenges_ideas",
+          type: "question",
+          pillar: "CHALLENGES / IDEAS",
+          ritual: "边界激活",
+          question: "你当前最大的挑战是什么？如果不受限制，你最想尝试的新想法是什么？"
+        },
+        {
+          id: "avatar",
+          type: "avatar",
+          pillar: "AVATAR",
+          ritual: "化身定影",
+          question: "最后一步：选择你的虚拟形象"
+        }
+      ];
+
+      const questionStepIds = setupFlow.filter((item) => item.type === "question").map((item) => item.id);
+
+      const avatarCatalog = [
+        { id: "aurora", name: "极光策士", group: "analysts", a: "#88619a", b: "#b095bd" },
+        { id: "pulse", name: "脉冲指挥官", group: "sentinels", a: "#4298b4", b: "#82c2d5" },
+        { id: "ember", name: "流焰创想者", group: "explorers", a: "#e4ae3a", b: "#f0d287" },
+        { id: "lumen", name: "光域共情者", group: "diplomats", a: "#33a474", b: "#73c3a0" },
+        { id: "nova", name: "星核执行体", group: "analysts", a: "#6778ff", b: "#7de4ff" },
+        { id: "orbit", name: "轨道协同者", group: "sentinels", a: "#5f78af", b: "#8ea4d6" }
       ];
 
       const styleLabels = {
@@ -1045,6 +1289,8 @@
         explorers: { a: "#e4ae3a", b: "#f0d287" }
       };
 
+      const avatarMap = Object.fromEntries(avatarCatalog.map((item) => [item.id, item]));
+
       function deepCopy(value) {
         return JSON.parse(JSON.stringify(value));
       }
@@ -1054,12 +1300,24 @@
           onboardingDone: false,
           setup: {
             index: 0,
-            answers: ["", "", "", ""]
+            answers: Object.fromEntries(questionStepIds.map((id) => [id, ""])),
+            recordingDurationSec: 0
           },
           model: {
             builtAt: "",
             personaSummary: "",
-            voiceSummary: ""
+            voiceSummary: "",
+            voiceClone: {
+              status: "idle",
+              voiceId: "",
+              demoAudio: "",
+              error: "",
+              recordedDurationSec: 0,
+              updatedAt: ""
+            }
+          },
+          integration: {
+            minimaxApiKey: ""
           },
           selfProfile: {
             id: "self",
@@ -1067,7 +1325,8 @@
             name: "我的数字人（你）",
             style: "balanced",
             shareCode: "VT-SHARE-0000",
-            group: "analysts"
+            group: "analysts",
+            avatarId: "aurora"
           },
           contacts: [
             { id: "planner", name: "执行规划师", sub: "目标拆解与优先级建议", group: "sentinels" },
@@ -1086,14 +1345,39 @@
 
         if (saved.setup && typeof saved.setup === "object") {
           result.setup.index = Number.isInteger(saved.setup.index) ? saved.setup.index : 0;
-          const answers = Array.isArray(saved.setup.answers) ? saved.setup.answers : [];
-          result.setup.answers = setupQuestions.map((_, idx) => String(answers[idx] || ""));
+          result.setup.recordingDurationSec = Number(saved.setup.recordingDurationSec || 0);
+
+          const answers = saved.setup.answers;
+          if (Array.isArray(answers)) {
+            questionStepIds.forEach((id, idx) => {
+              result.setup.answers[id] = String(answers[idx] || "");
+            });
+          } else if (answers && typeof answers === "object") {
+            questionStepIds.forEach((id) => {
+              result.setup.answers[id] = String(answers[id] || "");
+            });
+          }
         }
 
         if (saved.model && typeof saved.model === "object") {
           result.model.builtAt = String(saved.model.builtAt || "");
           result.model.personaSummary = String(saved.model.personaSummary || "");
           result.model.voiceSummary = String(saved.model.voiceSummary || "");
+
+          if (saved.model.voiceClone && typeof saved.model.voiceClone === "object") {
+            result.model.voiceClone.status = String(saved.model.voiceClone.status || "idle");
+            result.model.voiceClone.voiceId = String(saved.model.voiceClone.voiceId || "");
+            result.model.voiceClone.demoAudio = String(saved.model.voiceClone.demoAudio || "");
+            result.model.voiceClone.error = String(saved.model.voiceClone.error || "");
+            result.model.voiceClone.recordedDurationSec = Number(
+              saved.model.voiceClone.recordedDurationSec || 0
+            );
+            result.model.voiceClone.updatedAt = String(saved.model.voiceClone.updatedAt || "");
+          }
+        }
+
+        if (saved.integration && typeof saved.integration === "object") {
+          result.integration.minimaxApiKey = String(saved.integration.minimaxApiKey || "");
         }
 
         if (saved.selfProfile && typeof saved.selfProfile === "object") {
@@ -1102,6 +1386,7 @@
           result.selfProfile.style = String(saved.selfProfile.style || result.selfProfile.style);
           result.selfProfile.shareCode = String(saved.selfProfile.shareCode || result.selfProfile.shareCode);
           result.selfProfile.group = String(saved.selfProfile.group || result.selfProfile.group);
+          result.selfProfile.avatarId = String(saved.selfProfile.avatarId || result.selfProfile.avatarId);
         }
 
         if (Array.isArray(saved.contacts)) {
@@ -1116,7 +1401,11 @@
             .filter((item) => item.id !== "self");
         }
 
-        result.setup.index = Math.min(setupQuestions.length - 1, Math.max(0, result.setup.index));
+        if (avatarMap[result.selfProfile.avatarId]) {
+          result.selfProfile.group = avatarMap[result.selfProfile.avatarId].group;
+        }
+
+        result.setup.index = Math.min(setupFlow.length - 1, Math.max(0, result.setup.index));
         return result;
       }
 
@@ -1124,8 +1413,7 @@
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return createDefaultState();
-          const parsed = JSON.parse(raw);
-          return normalizeState(parsed);
+          return normalizeState(JSON.parse(raw));
         } catch {
           return createDefaultState();
         }
@@ -1135,6 +1423,17 @@
 
       function saveState() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      function formatDuration(totalSec) {
+        const sec = Math.max(0, Math.floor(totalSec || 0));
+        const m = String(Math.floor(sec / 60)).padStart(2, "0");
+        const s = String(sec % 60).padStart(2, "0");
+        return `${m}:${s}`;
       }
 
       const statusText = document.getElementById("status-text");
@@ -1269,26 +1568,55 @@
         utter.volume = 1;
         const voice = pickChineseVoice();
         if (voice) utter.voice = voice;
-
         if (options.onstart) utter.onstart = options.onstart;
         if (options.onend) utter.onend = options.onend;
         if (options.onerror) utter.onerror = options.onerror;
-
         window.speechSynthesis.speak(utter);
         return utter;
       }
 
+      const setupStagePillar = document.getElementById("setup-stage-pillar");
+      const setupStageRitual = document.getElementById("setup-stage-ritual");
       const setupQuestionEl = document.getElementById("setup-question");
       const setupProgressText = document.getElementById("setup-progress-text");
       const setupProgressFill = document.getElementById("setup-progress-fill");
       const setupPrevBtn = document.getElementById("setup-prev-btn");
       const setupNextBtn = document.getElementById("setup-next-btn");
       const setupAvatar = document.getElementById("setup-avatar");
+      const setupRecordDot = document.getElementById("setup-record-dot");
+      const setupRecordText = document.getElementById("setup-record-text");
+      const avatarPicker = document.getElementById("avatar-picker");
+      const avatarOptions = document.getElementById("avatar-options");
+      const avatarAiPrompt = document.getElementById("avatar-ai-prompt");
+      const avatarAiGenerateBtn = document.getElementById("avatar-ai-generate-btn");
+      const avatarAiNote = document.getElementById("avatar-ai-note");
 
       const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
       let setupRecognizer = null;
       let setupListeningEnabled = false;
       let setupSpeechToken = 0;
+      let modelingInProgress = false;
+
+      let recorderStream = null;
+      let recorderContext = null;
+      let recorderSource = null;
+      let recorderProcessor = null;
+      let recorderSilentGain = null;
+      let recorderBuffers = [];
+      let recorderSampleRate = 16000;
+      let recorderSampleCount = 0;
+      let recordingTicker = null;
+
+      const setupRecordingRuntime = {
+        mainBlob: null,
+        promptBlob: null,
+        durationSec: 0
+      };
+
+      function updateRecordingBadge({ live = false, text = "等待录音" } = {}) {
+        setupRecordDot.classList.toggle("live", live);
+        setupRecordText.textContent = text;
+      }
 
       function createRecognizer() {
         if (!SpeechRecognitionClass) return null;
@@ -1298,6 +1626,173 @@
         recognition.interimResults = true;
         recognition.maxAlternatives = 1;
         return recognition;
+      }
+
+      function currentSetupStep() {
+        return setupFlow[state.setup.index];
+      }
+
+      function isQuestionStep(step) {
+        return Boolean(step && step.type === "question");
+      }
+
+      function writeWavString(view, offset, str) {
+        for (let i = 0; i < str.length; i += 1) {
+          view.setUint8(offset + i, str.charCodeAt(i));
+        }
+      }
+
+      function encodeWavBlob(floatData, sampleRate) {
+        const byteRate = sampleRate * 2;
+        const blockAlign = 2;
+        const buffer = new ArrayBuffer(44 + floatData.length * 2);
+        const view = new DataView(buffer);
+
+        writeWavString(view, 0, "RIFF");
+        view.setUint32(4, 36 + floatData.length * 2, true);
+        writeWavString(view, 8, "WAVE");
+        writeWavString(view, 12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, byteRate, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, 16, true);
+        writeWavString(view, 36, "data");
+        view.setUint32(40, floatData.length * 2, true);
+
+        let offset = 44;
+        for (let i = 0; i < floatData.length; i += 1) {
+          const sample = Math.max(-1, Math.min(1, floatData[i]));
+          view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+          offset += 2;
+        }
+
+        return new Blob([buffer], { type: "audio/wav" });
+      }
+
+      function mergeBuffers(buffers, totalLength) {
+        const data = new Float32Array(totalLength);
+        let offset = 0;
+        buffers.forEach((chunk) => {
+          data.set(chunk, offset);
+          offset += chunk.length;
+        });
+        return data;
+      }
+
+      function stopRecordingTicker() {
+        clearInterval(recordingTicker);
+        recordingTicker = null;
+      }
+
+      function startRecordingTicker() {
+        stopRecordingTicker();
+        recordingTicker = setInterval(() => {
+          const sec = recorderSampleRate ? Math.floor(recorderSampleCount / recorderSampleRate) : 0;
+          updateRecordingBadge({ live: true, text: `录音中 ${formatDuration(sec)}` });
+        }, 500);
+      }
+
+      async function startSetupRecording() {
+        if (recorderProcessor) return true;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          updateRecordingBadge({ live: false, text: "浏览器不支持录音" });
+          return false;
+        }
+
+        try {
+          recorderStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) {
+            updateRecordingBadge({ live: false, text: "录音引擎不可用" });
+            return false;
+          }
+
+          recorderContext = new AudioContextClass();
+          recorderSampleRate = recorderContext.sampleRate;
+          recorderSource = recorderContext.createMediaStreamSource(recorderStream);
+          recorderProcessor = recorderContext.createScriptProcessor(4096, 1, 1);
+          recorderSilentGain = recorderContext.createGain();
+          recorderSilentGain.gain.value = 0;
+          recorderBuffers = [];
+          recorderSampleCount = 0;
+
+          recorderProcessor.onaudioprocess = (event) => {
+            const channel = event.inputBuffer.getChannelData(0);
+            recorderBuffers.push(new Float32Array(channel));
+            recorderSampleCount += channel.length;
+          };
+
+          recorderSource.connect(recorderProcessor);
+          recorderProcessor.connect(recorderSilentGain);
+          recorderSilentGain.connect(recorderContext.destination);
+
+          startRecordingTicker();
+          updateRecordingBadge({ live: true, text: "录音中 00:00" });
+          return true;
+        } catch {
+          updateRecordingBadge({ live: false, text: "麦克风权限未开启" });
+          return false;
+        }
+      }
+
+      async function stopSetupRecording() {
+        if (!recorderProcessor) return setupRecordingRuntime;
+
+        try {
+          recorderProcessor.disconnect();
+          recorderSource.disconnect();
+          recorderSilentGain.disconnect();
+        } catch {}
+
+        if (recorderStream) {
+          recorderStream.getTracks().forEach((track) => track.stop());
+        }
+
+        if (recorderContext && recorderContext.state !== "closed") {
+          try {
+            await recorderContext.close();
+          } catch {}
+        }
+
+        stopRecordingTicker();
+
+        const merged = mergeBuffers(recorderBuffers, recorderSampleCount);
+        const durationSec = recorderSampleRate ? recorderSampleCount / recorderSampleRate : 0;
+        const mainBlob = merged.length ? encodeWavBlob(merged, recorderSampleRate) : null;
+        const promptSamples = merged.slice(0, Math.min(merged.length, Math.floor(recorderSampleRate * 8)));
+        const promptBlob = promptSamples.length ? encodeWavBlob(promptSamples, recorderSampleRate) : null;
+
+        setupRecordingRuntime.mainBlob = mainBlob;
+        setupRecordingRuntime.promptBlob = promptBlob;
+        setupRecordingRuntime.durationSec = durationSec;
+
+        state.setup.recordingDurationSec = durationSec;
+        state.model.voiceClone.recordedDurationSec = durationSec;
+        saveState();
+
+        updateRecordingBadge({
+          live: false,
+          text: durationSec > 0 ? `已录制 ${formatDuration(durationSec)}` : "未录到有效音频"
+        });
+
+        recorderStream = null;
+        recorderContext = null;
+        recorderSource = null;
+        recorderProcessor = null;
+        recorderSilentGain = null;
+        recorderBuffers = [];
+        recorderSampleCount = 0;
+
+        return setupRecordingRuntime;
+      }
+
+      async function ensureSetupRecording() {
+        if (state.onboardingDone) return false;
+        if (recorderProcessor) return true;
+        return startSetupRecording();
       }
 
       function stopSetupListening() {
@@ -1311,16 +1806,21 @@
         }
       }
 
-      function startSetupListening() {
+      async function startSetupListening() {
+        const step = currentSetupStep();
+        if (!isQuestionStep(step)) return;
         if (!SpeechRecognitionClass || currentScreen !== "setup") return;
 
+        await ensureSetupRecording();
         stopSetupListening();
         setupListeningEnabled = true;
-        const indexAtStart = state.setup.index;
+
+        const stepId = step.id;
         const recognition = createRecognizer();
         if (!recognition) return;
 
         setupRecognizer = recognition;
+
         recognition.onresult = (event) => {
           let finalText = "";
           for (let i = event.resultIndex; i < event.results.length; i += 1) {
@@ -1331,20 +1831,20 @@
           }
 
           if (!finalText) return;
-          if (state.setup.index !== indexAtStart) return;
+          if (currentSetupStep().id !== stepId) return;
 
-          const merged = `${state.setup.answers[indexAtStart] || ""} ${finalText}`.trim();
-          state.setup.answers[indexAtStart] = merged.slice(0, 280);
+          const merged = `${state.setup.answers[stepId] || ""} ${finalText}`.trim();
+          state.setup.answers[stepId] = merged.slice(0, 400);
           saveState();
-          statusText.textContent = `创建助理采集中 · 已记录第 ${indexAtStart + 1} 题`;
+          statusText.textContent = `创建助理采集中 · 已记录 ${step.pillar}`;
         };
 
         recognition.onerror = () => {
-          statusText.textContent = `创建助理采集中 · ${state.setup.index + 1}/${setupQuestions.length}`;
+          statusText.textContent = `创建助理采集中 · ${state.setup.index + 1}/${setupFlow.length}`;
         };
 
         recognition.onend = () => {
-          if (setupListeningEnabled && currentScreen === "setup") {
+          if (setupListeningEnabled && currentScreen === "setup" && currentSetupStep().id === stepId) {
             try {
               recognition.start();
             } catch {}
@@ -1356,63 +1856,187 @@
         } catch {}
       }
 
-      function promptSetupQuestion() {
+      function getCloneReadyText() {
+        return state.model.voiceClone.status === "success"
+          ? "人格完成 · MiniMax 声音可用"
+          : "人格与语音建模已完成";
+      }
+
+      function selectAvatar(avatarId, source = "manual") {
+        const avatar = avatarMap[avatarId];
+        if (!avatar) return;
+        state.selfProfile.avatarId = avatar.id;
+        state.selfProfile.group = avatar.group;
+        saveState();
+        applySelfProfile();
+        renderAvatarOptions();
+
+        if (source === "ai") {
+          avatarAiNote.textContent = `AI 已生成：${avatar.name}（${avatar.group.toUpperCase()}）`;
+        } else {
+          avatarAiNote.textContent = `已选择：${avatar.name}`;
+        }
+      }
+
+      function renderAvatarOptions() {
+        avatarOptions.innerHTML = "";
+        avatarCatalog.forEach((avatar) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `avatar-option ${state.selfProfile.avatarId === avatar.id ? "active" : ""}`;
+          btn.dataset.avatarId = avatar.id;
+          btn.innerHTML = `
+            <span class="avatar-chip" style="--avatar-a:${avatar.a}; --avatar-b:${avatar.b};"></span>
+            <p>${avatar.name}</p>
+          `;
+          avatarOptions.appendChild(btn);
+        });
+      }
+
+      function getAvatarByPrompt(prompt) {
+        const text = (prompt || "").toLowerCase();
+        const byGroup = {
+          analysts: ["理性", "分析", "冷静", "逻辑"],
+          diplomats: ["温暖", "共情", "治愈", "陪伴"],
+          sentinels: ["稳", "秩序", "执行", "可靠"],
+          explorers: ["创意", "活力", "冒险", "表达"]
+        };
+
+        let targetGroup = "";
+        Object.entries(byGroup).forEach(([group, keywords]) => {
+          if (targetGroup) return;
+          if (keywords.some((word) => text.includes(word))) {
+            targetGroup = group;
+          }
+        });
+
+        const pool = targetGroup
+          ? avatarCatalog.filter((item) => item.group === targetGroup)
+          : avatarCatalog;
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      function promptSetupStep() {
         if (currentScreen !== "setup") return;
+        const step = currentSetupStep();
         setupSpeechToken += 1;
         const token = setupSpeechToken;
-        const index = state.setup.index;
-        const question = setupQuestions[index];
 
         stopSetupListening();
         setAvatarState(setupAvatar, null, "thinking");
 
+        if (!step) return;
+
+        if (step.type === "avatar") {
+          speakText("最后一步，请选择你的虚拟形象，也可以使用 AI 生成。", {
+            rate: 0.98,
+            onstart: () => {
+              if (token !== setupSpeechToken) return;
+              setAvatarState(setupAvatar, null, "speaking");
+              statusText.textContent = "仪式收束中 · 选择虚拟形象";
+            },
+            onend: () => {
+              if (token !== setupSpeechToken) return;
+              setAvatarState(setupAvatar, null, "idle");
+            }
+          });
+          return;
+        }
+
+        const question = step.question;
         speakText(question, {
           rate: 0.96,
           onstart: () => {
             if (token !== setupSpeechToken) return;
             setAvatarState(setupAvatar, null, "speaking");
-            statusText.textContent = `创建助理提问中 · ${index + 1}/${setupQuestions.length}`;
+            statusText.textContent = `创建助理提问中 · ${step.pillar}`;
           },
-          onend: () => {
+          onend: async () => {
             if (token !== setupSpeechToken || currentScreen !== "setup") return;
             setAvatarState(setupAvatar, null, "listening");
-            statusText.textContent = `创建助理采集中 · ${index + 1}/${setupQuestions.length}`;
-            startSetupListening();
+            statusText.textContent = `创建助理采集中 · ${state.setup.index + 1}/${setupFlow.length}`;
+            await startSetupListening();
           }
         });
       }
 
-      function renderSetupQuestion({ speak = false } = {}) {
-        const index = state.setup.index;
-        setupQuestionEl.textContent = setupQuestions[index];
-        setupProgressText.textContent = `${index + 1} / ${setupQuestions.length}`;
-        setupProgressFill.style.width = `${((index + 1) / setupQuestions.length) * 100}%`;
-        setupPrevBtn.disabled = index === 0;
-        setupNextBtn.textContent = index === setupQuestions.length - 1 ? "开始建模" : "下一题";
-        statusText.textContent = `创建助理采集中 · ${index + 1}/${setupQuestions.length}`;
-        saveState();
+      function renderSetupStep({ speak = false } = {}) {
+        const step = currentSetupStep();
+        if (!step) return;
 
-        if (speak) {
-          promptSetupQuestion();
+        setupStagePillar.textContent = `TELOS · ${step.pillar}`;
+        setupStageRitual.textContent = `仪式阶段 · ${step.ritual}`;
+        setupProgressText.textContent = `${state.setup.index + 1} / ${setupFlow.length}`;
+        setupProgressFill.style.width = `${((state.setup.index + 1) / setupFlow.length) * 100}%`;
+        setupPrevBtn.disabled = state.setup.index === 0;
+        setupNextBtn.textContent = state.setup.index === setupFlow.length - 1 ? "开始建模" : "下一题";
+
+        if (step.type === "avatar") {
+          setupQuestionEl.textContent = step.question;
+          avatarPicker.classList.remove("hidden");
+          stopSetupListening();
+          setAvatarState(setupAvatar, null, "thinking");
+          statusText.textContent = "采集最后一步 · 选择你的虚拟形象";
+          renderAvatarOptions();
+        } else {
+          setupQuestionEl.textContent = step.question;
+          avatarPicker.classList.add("hidden");
+          statusText.textContent = `创建助理采集中 · ${state.setup.index + 1}/${setupFlow.length}`;
+          if (state.setup.recordingDurationSec > 0 && !recorderProcessor) {
+            updateRecordingBadge({
+              live: false,
+              text: `已录制 ${formatDuration(state.setup.recordingDurationSec)}`
+            });
+          }
         }
+
+        saveState();
+        if (speak) promptSetupStep();
       }
 
       setupPrevBtn.addEventListener("click", () => {
-        if (state.setup.index === 0) return;
+        if (state.setup.index === 0 || modelingInProgress) return;
         state.setup.index -= 1;
-        renderSetupQuestion({ speak: true });
+        renderSetupStep({ speak: true });
       });
 
-      setupNextBtn.addEventListener("click", () => {
-        if (state.setup.index < setupQuestions.length - 1) {
+      setupNextBtn.addEventListener("click", async () => {
+        if (modelingInProgress) return;
+        const step = currentSetupStep();
+        if (!step) return;
+
+        if (state.setup.index < setupFlow.length - 1) {
           state.setup.index += 1;
-          renderSetupQuestion({ speak: true });
+          renderSetupStep({ speak: true });
           return;
         }
 
+        if (!state.selfProfile.avatarId) {
+          selectAvatar("aurora");
+        }
+
+        setupPrevBtn.disabled = true;
+        setupNextBtn.disabled = true;
+        statusText.textContent = "封存语音样本中...";
+        await stopSetupRecording();
         setAvatarState(setupAvatar, null, "speaking");
         statusText.textContent = "采集完成 · 准备建模";
-        runModeling();
+        await runModeling();
+      });
+
+      avatarOptions.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest(".avatar-option");
+        if (!button) return;
+        const avatarId = button.dataset.avatarId;
+        if (!avatarId) return;
+        selectAvatar(avatarId, "manual");
+      });
+
+      avatarAiGenerateBtn.addEventListener("click", () => {
+        const avatar = getAvatarByPrompt(avatarAiPrompt.value.trim());
+        selectAvatar(avatar.id, "ai");
       });
 
       const modelTitle = document.getElementById("model-title");
@@ -1420,45 +2044,193 @@
       const modelPercent = document.getElementById("model-percent");
       const modelFill = document.getElementById("model-fill");
       const modelLog = document.getElementById("model-log");
-      const modelSteps = [
-        { title: "初始化建模引擎", sub: "检查采集结构...", log: "语义素材解析完成" },
-        { title: "生成人格向量", sub: "融合目标与决策特征...", log: "人格特征融合完成" },
-        { title: "训练语音模型", sub: "拟合音色与韵律...", log: "声纹建模完成" },
-        { title: "完成校准", sub: "输出可通话数字人...", log: "数字人可用" }
-      ];
+
+      function appendModelLog(text, status = "done") {
+        const item = document.createElement("li");
+        item.textContent = text;
+        if (status === "done") {
+          item.classList.add("done");
+        }
+        modelLog.appendChild(item);
+      }
+
+      function setModelProgress(current, total, title, sub) {
+        const value = Math.round((current / total) * 100);
+        modelTitle.textContent = title;
+        modelSub.textContent = sub;
+        modelFill.style.width = `${value}%`;
+        modelPercent.textContent = `${value}%`;
+      }
 
       function buildHiddenModelFromAnswers() {
-        const answers = state.setup.answers.map((item) => item.trim()).filter(Boolean);
-        const merged = answers.join(" ");
+        const merged = questionStepIds
+          .map((id) => state.setup.answers[id] || "")
+          .join(" ")
+          .trim();
         const text = merged || "目标明确，表达稳定，偏向务实执行。";
 
-        let personaSummary = "稳健、以目标为导向，倾向先聚焦关键任务再展开。";
-        if (text.includes("复盘") || text.includes("总结")) {
-          personaSummary = "重视复盘和持续改进，偏好可执行、可追踪的行动策略。";
+        let personaSummary = "重视目标牵引和长期一致性，偏好先关键后扩展。";
+        if (text.includes("复盘") || text.includes("经历")) {
+          personaSummary = "重视复盘和迭代，善于从真实经历中提炼行动原则。";
         }
-        if (text.includes("创作") || text.includes("表达")) {
-          personaSummary = "表达驱动，关注内容结构和观点传达效率。";
+        if (text.includes("价值") || text.includes("原则")) {
+          personaSummary = "原则驱动，决策时优先保证长期价值与关系稳定。";
         }
 
-        let voiceSummary = "语速中等、语气平稳，适合日常协作与复盘场景。";
-        if (text.includes("快速") || text.includes("效率")) {
-          voiceSummary = "语速偏快、指令清晰，适合高密度任务推进。";
+        let voiceSummary = "语速中等、表达清晰，适合日常协作与复盘场景。";
+        if (text.includes("效率") || text.includes("快速")) {
+          voiceSummary = "语速偏快、结构直给，适合高密度任务推进。";
         }
-        if (text.includes("温和") || text.includes("陪伴")) {
-          voiceSummary = "语调偏柔和，强调陪伴与鼓励感。";
+        if (text.includes("陪伴") || text.includes("温暖")) {
+          voiceSummary = "语调偏柔和，强调陪伴与稳定反馈。";
         }
 
         state.model.builtAt = new Date().toISOString();
         state.model.personaSummary = personaSummary;
         state.model.voiceSummary = voiceSummary;
-        state.onboardingDone = true;
-
-        const selfContactSubEl = document.getElementById("self-contact-sub");
-        selfContactSubEl.textContent = "人格与语音建模已完成";
         saveState();
       }
 
-      function runModeling() {
+      function getMiniMaxApiKey() {
+        return (state.integration.minimaxApiKey || "").trim();
+      }
+
+      async function parseJsonSafe(response) {
+        try {
+          return await response.json();
+        } catch {
+          return null;
+        }
+      }
+
+      function createMiniMaxVoiceId() {
+        const seed = state.selfProfile.name.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10) || "VoiceTwin";
+        return `V${seed}${Date.now()}`;
+      }
+
+      async function uploadMiniMaxFile(apiKey, blob, purpose, fileName) {
+        const form = new FormData();
+        form.append("purpose", purpose);
+        form.append("file", blob, fileName);
+        const response = await fetch(`${MINIMAX_BASE_URL}/files/upload`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`
+          },
+          body: form
+        });
+        const data = await parseJsonSafe(response);
+        const statusCode = data?.base_resp?.status_code;
+        if (!response.ok || (typeof statusCode === "number" && statusCode !== 0)) {
+          const message = data?.base_resp?.status_msg || data?.message || `上传失败 (${response.status})`;
+          throw new Error(message);
+        }
+
+        const fileId = data?.file?.file_id;
+        if (!fileId) throw new Error("上传成功但未返回 file_id");
+        return fileId;
+      }
+
+      async function callMiniMaxVoiceClone(apiKey, voiceId, mainFileId, promptFileId) {
+        const body = {
+          file_id: mainFileId,
+          voice_id: voiceId,
+          text: "你好，我是你的数字人分身。",
+          model: "speech-2.8-hd",
+          need_noise_reduction: true,
+          need_volume_normalization: true
+        };
+
+        if (promptFileId) {
+          body.clone_prompt = {
+            prompt_audio: promptFileId,
+            prompt_text: "你好，我是你的数字人分身。"
+          };
+        }
+
+        const response = await fetch(`${MINIMAX_BASE_URL}/voice_clone`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await parseJsonSafe(response);
+        const statusCode = data?.base_resp?.status_code;
+        if (!response.ok || (typeof statusCode === "number" && statusCode !== 0)) {
+          const message = data?.base_resp?.status_msg || data?.message || `复刻失败 (${response.status})`;
+          throw new Error(message);
+        }
+
+        return data;
+      }
+
+      function setVoiceCloneStatus(status, error = "") {
+        state.model.voiceClone.status = status;
+        state.model.voiceClone.error = error;
+        state.model.voiceClone.updatedAt = new Date().toISOString();
+        saveState();
+        updateMiniMaxPanel();
+      }
+
+      async function runMiniMaxVoiceClone({ fromModel = false } = {}) {
+        const apiKey = getMiniMaxApiKey();
+        if (!apiKey) {
+          if (!fromModel) setVoiceCloneStatus("failed", "请先填写 MiniMax API Key");
+          return { status: "skipped", message: "未填写 MiniMax API Key" };
+        }
+
+        if (!setupRecordingRuntime.mainBlob) {
+          setVoiceCloneStatus("failed", "未检测到本次采访音频，请重新完成一次采访采集");
+          return { status: "failed", message: "未检测到采访音频" };
+        }
+
+        if (setupRecordingRuntime.durationSec < 10) {
+          setVoiceCloneStatus("failed", "声音样本不足 10 秒，无法进行稳定复刻");
+          return { status: "failed", message: "声音样本不足 10 秒" };
+        }
+
+        setVoiceCloneStatus("running");
+        try {
+          const mainFileId = await uploadMiniMaxFile(
+            apiKey,
+            setupRecordingRuntime.mainBlob,
+            "voice_clone",
+            "setup_voice.wav"
+          );
+
+          let promptFileId = "";
+          if (setupRecordingRuntime.promptBlob) {
+            promptFileId = await uploadMiniMaxFile(
+              apiKey,
+              setupRecordingRuntime.promptBlob,
+              "prompt_audio",
+              "setup_prompt.wav"
+            );
+          }
+
+          const voiceId = createMiniMaxVoiceId();
+          const cloneData = await callMiniMaxVoiceClone(apiKey, voiceId, mainFileId, promptFileId);
+          state.model.voiceClone.status = "success";
+          state.model.voiceClone.voiceId = voiceId;
+          state.model.voiceClone.error = "";
+          state.model.voiceClone.demoAudio = String(cloneData?.demo_audio || "");
+          state.model.voiceClone.updatedAt = new Date().toISOString();
+          saveState();
+          updateMiniMaxPanel();
+          return { status: "success", message: `voice_id: ${voiceId}` };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "声音复刻失败";
+          setVoiceCloneStatus("failed", message);
+          return { status: "failed", message };
+        }
+      }
+
+      async function runModeling() {
+        if (modelingInProgress) return;
+        modelingInProgress = true;
         stopSetupListening();
         showScreen("model");
         statusText.textContent = "建模仪式进行中";
@@ -1468,40 +2240,77 @@
 
         buildHiddenModelFromAnswers();
 
-        let idx = 0;
-        function next() {
-          if (idx >= modelSteps.length) {
-            modelTitle.textContent = "建模完成";
-            modelSub.textContent = "正在打开数字人通讯录...";
-            modelFill.style.width = "100%";
-            modelPercent.textContent = "100%";
-            statusText.textContent = "建模完成 · 打开通讯录";
-            setTimeout(openHome, 900);
-            return;
+        const ritualSteps = [
+          {
+            title: "展开 TELOS 星图",
+            sub: "读取 MISSION / GOALS / BELIEFS",
+            log: "核心使命与价值坐标完成锁定",
+            delay: 900
+          },
+          {
+            title: "注入认知模型",
+            sub: "融合 MODELS / STRATEGIES",
+            log: "决策偏好与执行策略完成映射",
+            delay: 980
+          },
+          {
+            title: "封存个人叙事",
+            sub: "吸收 NARRATIVES / CHALLENGES / IDEAS",
+            log: "个人叙事链路完成固化",
+            delay: 950
+          },
+          {
+            title: "拟合语音样本",
+            sub: "提取音色、韵律与节奏特征",
+            log: "基础声纹向量生成完成",
+            delay: 900
           }
+        ];
 
-          const step = modelSteps[idx];
-          const value = Math.round(((idx + 1) / modelSteps.length) * 100);
-          modelTitle.textContent = step.title;
-          modelSub.textContent = step.sub;
-          modelFill.style.width = `${value}%`;
-          modelPercent.textContent = `${value}%`;
-          const item = document.createElement("li");
-          item.textContent = step.log;
-          modelLog.appendChild(item);
-          setTimeout(() => item.classList.add("done"), 260);
-          idx += 1;
-          setTimeout(next, 1100);
+        const totalSteps = ritualSteps.length + 2;
+        let stepCount = 0;
+
+        for (const step of ritualSteps) {
+          stepCount += 1;
+          setModelProgress(stepCount, totalSteps, step.title, step.sub);
+          await sleep(step.delay);
+          appendModelLog(step.log, "done");
         }
 
-        setTimeout(next, 420);
+        stepCount += 1;
+        setModelProgress(stepCount, totalSteps, "启动 MiniMax 声音复刻", "上传采访音频并创建 voice_id");
+        const cloneResult = await runMiniMaxVoiceClone({ fromModel: true });
+        if (cloneResult.status === "success") {
+          appendModelLog(`MiniMax 声音复刻成功 · ${cloneResult.message}`, "done");
+        } else if (cloneResult.status === "skipped") {
+          appendModelLog(`已跳过声音复刻 · ${cloneResult.message}`, "pending");
+        } else {
+          appendModelLog(`声音复刻失败 · ${cloneResult.message}`, "pending");
+        }
+
+        stepCount += 1;
+        setModelProgress(stepCount, totalSteps, "完成人格校准", "输出可通话数字人");
+        await sleep(820);
+        appendModelLog("数字人初始化完成", "done");
+
+        state.onboardingDone = true;
+        saveState();
+
+        modelTitle.textContent = "建模完成";
+        modelSub.textContent = "正在打开数字人通讯录...";
+        modelFill.style.width = "100%";
+        modelPercent.textContent = "100%";
+        statusText.textContent = "建模完成 · 打开通讯录";
+        await sleep(900);
+        modelingInProgress = false;
+        openHome();
       }
 
       function getAllContacts() {
         const selfContact = {
           id: "self",
           name: state.selfProfile.name,
-          sub: "人格与语音建模已完成",
+          sub: getCloneReadyText(),
           group: state.selfProfile.group
         };
         return [selfContact, ...state.contacts];
@@ -1518,8 +2327,9 @@
 
       function applySelfProfile() {
         selfContactNameEl.textContent = state.selfProfile.name;
-        selfContactSubEl.textContent = "人格与语音建模已完成";
-        const palette = groupPalette[state.selfProfile.group] || groupPalette.analysts;
+        selfContactSubEl.textContent = getCloneReadyText();
+        const avatar = avatarMap[state.selfProfile.avatarId];
+        const palette = avatar || groupPalette[state.selfProfile.group] || groupPalette.analysts;
         selfContactAvatarEl.style.setProperty("--contact-a", palette.a);
         selfContactAvatarEl.style.setProperty("--contact-b", palette.b);
       }
@@ -1562,6 +2372,8 @@
         document.getElementById("update-name-input").value = state.selfProfile.name;
         document.getElementById("update-style-select").value = state.selfProfile.style;
         document.getElementById("share-code-output").value = state.selfProfile.shareCode;
+        minimaxApiKeyInput.value = state.integration.minimaxApiKey;
+        updateMiniMaxPanel();
         showScreen("settings");
         statusText.textContent = "我的数字人设置";
       });
@@ -1620,6 +2432,52 @@
       const copyShareCodeBtn = document.getElementById("copy-share-code-btn");
       const shareResult = document.getElementById("share-result");
       const settingsBackBtn = document.getElementById("settings-back-btn");
+      const minimaxApiKeyInput = document.getElementById("minimax-api-key-input");
+      const minimaxVoiceId = document.getElementById("minimax-voice-id");
+      const minimaxCloneBtn = document.getElementById("minimax-clone-btn");
+      const minimaxCloneStatus = document.getElementById("minimax-clone-status");
+      const minimaxDemoAudio = document.getElementById("minimax-demo-audio");
+
+      function updateMiniMaxPanel() {
+        const cloneState = state.model.voiceClone;
+        const voiceId = cloneState.voiceId || "未生成";
+        minimaxVoiceId.textContent = `voice_id: ${voiceId}`;
+
+        const statusMap = {
+          idle: "未执行",
+          running: "声音复刻中...",
+          success: "声音复刻成功",
+          failed: `声音复刻失败: ${cloneState.error || "未知错误"}`
+        };
+        const durationNote =
+          cloneState.recordedDurationSec > 0
+            ? ` · 采样 ${formatDuration(cloneState.recordedDurationSec)}`
+            : "";
+        minimaxCloneStatus.textContent = `${statusMap[cloneState.status] || cloneState.status}${durationNote}`;
+
+        if (cloneState.demoAudio) {
+          minimaxDemoAudio.src = cloneState.demoAudio;
+          minimaxDemoAudio.classList.remove("hidden");
+        } else {
+          minimaxDemoAudio.removeAttribute("src");
+          minimaxDemoAudio.classList.add("hidden");
+        }
+      }
+
+      minimaxApiKeyInput.addEventListener("change", () => {
+        state.integration.minimaxApiKey = minimaxApiKeyInput.value.trim();
+        saveState();
+        updateMiniMaxPanel();
+      });
+
+      minimaxCloneBtn.addEventListener("click", async () => {
+        minimaxCloneBtn.disabled = true;
+        statusText.textContent = "正在执行 MiniMax 声音复刻";
+        await runMiniMaxVoiceClone({ fromModel: false });
+        updateMiniMaxPanel();
+        statusText.textContent = "我的数字人设置";
+        minimaxCloneBtn.disabled = false;
+      });
 
       queryProfileBtn.addEventListener("click", () => {
         const builtAt = state.model.builtAt
@@ -1711,12 +2569,6 @@
         ]
       };
 
-      function formatDuration(totalSec) {
-        const m = String(Math.floor(totalSec / 60)).padStart(2, "0");
-        const s = String(totalSec % 60).padStart(2, "0");
-        return `${m}:${s}`;
-      }
-
       function generateReply(userText, contact) {
         const clean = (userText || "").trim();
         const persona = state.model.personaSummary || "以目标为导向，先关键后优化。";
@@ -1735,7 +2587,6 @@
         if (clean.includes("表达") || clean.includes("口播")) {
           return `给你一个表达模板：一句结论 + 两条理由 + 一步行动。${voice}`;
         }
-
         return `${list[Math.floor(Math.random() * list.length)]} ${persona}`;
       }
 
@@ -1824,7 +2675,6 @@
 
         stopCallRecognition();
         callRecognitionEnabled = true;
-
         const recognition = createRecognizer();
         if (!recognition) {
           startCallFallback();
@@ -1832,11 +2682,9 @@
         }
 
         callRecognizer = recognition;
-
         recognition.onresult = (event) => {
           let interim = "";
           let finalText = "";
-
           for (let i = event.resultIndex; i < event.results.length; i += 1) {
             const piece = event.results[i][0].transcript.trim();
             if (!piece) continue;
@@ -1943,7 +2791,6 @@
       function openCall(contactId) {
         const target = getAllContacts().find((item) => item.id === contactId);
         if (!target) return;
-
         activeContact = target;
         showScreen("call");
         callTitle.textContent = `与 ${target.name} 通话中`;
@@ -1951,7 +2798,6 @@
         callTimerEl.textContent = "00:00";
         callStateEl.textContent = "语音通话已接通";
         callCaption.textContent = "实时转写: 通话已接通...";
-
         setTimeout(startCallSession, 360);
       }
 
@@ -1973,15 +2819,31 @@
         applySelfProfile();
         renderContacts();
         setWaveIdle(callWaveBars);
+        updateMiniMaxPanel();
 
         if (state.onboardingDone) {
           openHome();
+          updateRecordingBadge({
+            live: false,
+            text:
+              state.setup.recordingDurationSec > 0
+                ? `已录制 ${formatDuration(state.setup.recordingDurationSec)}`
+                : "等待录音"
+          });
           return;
         }
 
         showScreen("setup");
-        renderSetupQuestion({ speak: speechReady });
+        renderSetupStep({ speak: speechReady });
         setAvatarState(setupAvatar, null, "listening");
+        if (state.setup.recordingDurationSec > 0) {
+          updateRecordingBadge({
+            live: false,
+            text: `已录制 ${formatDuration(state.setup.recordingDurationSec)}`
+          });
+        } else {
+          updateRecordingBadge({ live: false, text: "等待录音" });
+        }
       }
 
       bootstrap();
