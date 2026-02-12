@@ -10,6 +10,9 @@
 - 语音采集与声音复刻：
   - 采访过程持续录制 WAV 音频样本（含录音时长反馈）。
   - 设置页可配置 MiniMax API Key，并调用 MiniMax `files/upload` + `voice_clone` 完成声音复刻。
+- MiniMax TTS 双角色接入：
+  - 创建助理提问默认走 MiniMax TTS（无 Key 时回退浏览器 TTS）。
+  - 数字人通话回复优先使用 MiniMax 复刻 `voice_id` 播报。
 - 电话式通话页：头像、通话计时、状态、实时转写、挂断。
 - 虚拟形象选择：
   - 采集最后一步支持手动选择虚拟形象。

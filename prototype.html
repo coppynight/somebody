@@ -1205,6 +1205,9 @@
     <script>
       const STORAGE_KEY = "voiceTwinState.v2";
       const MINIMAX_BASE_URL = "https://api.minimax.io/v1";
+      const MINIMAX_TTS_MODEL = "speech-2.5-hd";
+      const MINIMAX_ASSISTANT_VOICE_ID = "male-qn-qingse";
+      const MINIMAX_DIGITAL_FALLBACK_VOICE_ID = "male-qn-qingse";
 
       const setupFlow = [
         {
@@ -1451,6 +1454,7 @@
         Object.values(screens).forEach((screen) => screen.classList.remove("active"));
         screens[name].classList.add("active");
         currentScreen = name;
+        stopActiveTts();
 
         if (name !== "setup") {
           stopSetupListening();
@@ -1554,7 +1558,116 @@
         speechReady = true;
       }
 
-      function speakText(text, options = {}) {
+      const minimaxAudioPlayer = new Audio();
+      let minimaxAudioUrl = "";
+      let activeSpeakToken = 0;
+
+      function revokeMiniMaxAudioUrl() {
+        if (!minimaxAudioUrl) return;
+        URL.revokeObjectURL(minimaxAudioUrl);
+        minimaxAudioUrl = "";
+      }
+
+      function haltSpeechPlayback() {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+        minimaxAudioPlayer.pause();
+        minimaxAudioPlayer.removeAttribute("src");
+        revokeMiniMaxAudioUrl();
+      }
+
+      function stopActiveTts() {
+        activeSpeakToken += 1;
+        haltSpeechPlayback();
+      }
+
+      function isHexAudio(text) {
+        return typeof text === "string" && text.length > 16 && text.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(text);
+      }
+
+      function hexToBytes(hex) {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+          bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+        }
+        return bytes;
+      }
+
+      function base64ToBytes(base64) {
+        const raw = atob(base64);
+        const bytes = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i += 1) {
+          bytes[i] = raw.charCodeAt(i);
+        }
+        return bytes;
+      }
+
+      function getSpeakerVoiceId(speaker) {
+        if (speaker === "assistant") {
+          return MINIMAX_ASSISTANT_VOICE_ID;
+        }
+        if (speaker === "digital" && state.model.voiceClone.voiceId) {
+          return state.model.voiceClone.voiceId;
+        }
+        return MINIMAX_DIGITAL_FALLBACK_VOICE_ID;
+      }
+
+      async function requestMiniMaxTtsAudio(text, speaker, options = {}) {
+        const apiKey = getMiniMaxApiKey();
+        if (!apiKey) throw new Error("missing_api_key");
+
+        const body = {
+          model: MINIMAX_TTS_MODEL,
+          text,
+          stream: false,
+          subtitle_enable: false,
+          voice_setting: {
+            voice_id: options.voiceId || getSpeakerVoiceId(speaker),
+            speed: options.speed || 1,
+            vol: 1,
+            pitch: 0
+          },
+          audio_setting: {
+            sample_rate: 32000,
+            bitrate: 128000,
+            format: "mp3",
+            channel: 1
+          }
+        };
+
+        const response = await fetch(`${MINIMAX_BASE_URL}/t2a_v2`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await parseJsonSafe(response);
+        const statusCode = data?.base_resp?.status_code;
+        if (!response.ok || (typeof statusCode === "number" && statusCode !== 0)) {
+          const message = data?.base_resp?.status_msg || data?.message || `MiniMax TTS 失败 (${response.status})`;
+          throw new Error(message);
+        }
+
+        const audioRaw = String(data?.data?.audio || data?.audio || "");
+        if (!audioRaw) throw new Error("MiniMax TTS 未返回音频数据");
+
+        const format = String(data?.extra_info?.audio_format || data?.audio_format || "mp3").toLowerCase();
+        const bytes = isHexAudio(audioRaw) ? hexToBytes(audioRaw) : base64ToBytes(audioRaw);
+        const mimeType = format.includes("wav")
+          ? "audio/wav"
+          : format.includes("pcm")
+            ? "audio/pcm"
+            : "audio/mpeg";
+
+        const blob = new Blob([bytes], { type: mimeType });
+        return URL.createObjectURL(blob);
+      }
+
+      function speakByBrowser(text, options = {}) {
         if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
           if (options.onend) options.onend();
           return null;
@@ -1573,6 +1686,64 @@
         if (options.onerror) utter.onerror = options.onerror;
         window.speechSynthesis.speak(utter);
         return utter;
+      }
+
+      async function speakText(text, options = {}) {
+        const content = String(text || "").trim();
+        if (!content) {
+          if (options.onend) options.onend();
+          return null;
+        }
+
+        const token = ++activeSpeakToken;
+        haltSpeechPlayback();
+        const speaker = options.speaker || "assistant";
+        const apiKey = getMiniMaxApiKey();
+
+        if (!apiKey) {
+          return speakByBrowser(content, options);
+        }
+
+        try {
+          const url = await requestMiniMaxTtsAudio(content, speaker, options);
+          if (token !== activeSpeakToken) {
+            URL.revokeObjectURL(url);
+            return null;
+          }
+
+          minimaxAudioPlayer.pause();
+          minimaxAudioPlayer.currentTime = 0;
+          revokeMiniMaxAudioUrl();
+          minimaxAudioUrl = url;
+          minimaxAudioPlayer.src = url;
+
+          if (options.onstart) {
+            minimaxAudioPlayer.onplay = () => {
+              if (token !== activeSpeakToken) return;
+              options.onstart();
+            };
+          } else {
+            minimaxAudioPlayer.onplay = null;
+          }
+
+          minimaxAudioPlayer.onended = () => {
+            if (token !== activeSpeakToken) return;
+            if (options.onend) options.onend();
+          };
+
+          minimaxAudioPlayer.onerror = () => {
+            if (token !== activeSpeakToken) return;
+            if (options.onerror) options.onerror(new Error("MiniMax 音频播放失败"));
+            speakByBrowser(content, options);
+          };
+
+          await minimaxAudioPlayer.play();
+          return { type: "minimax", token };
+        } catch (error) {
+          if (token !== activeSpeakToken) return null;
+          if (options.onerror) options.onerror(error);
+          return speakByBrowser(content, options);
+        }
       }
 
       const setupStagePillar = document.getElementById("setup-stage-pillar");
@@ -1929,6 +2100,7 @@
 
         if (step.type === "avatar") {
           speakText("最后一步，请选择你的虚拟形象，也可以使用 AI 生成。", {
+            speaker: "assistant",
             rate: 0.98,
             onstart: () => {
               if (token !== setupSpeechToken) return;
@@ -1945,6 +2117,7 @@
 
         const question = step.question;
         speakText(question, {
+          speaker: "assistant",
           rate: 0.96,
           onstart: () => {
             if (token !== setupSpeechToken) return;
@@ -2232,6 +2405,7 @@
         if (modelingInProgress) return;
         modelingInProgress = true;
         stopSetupListening();
+        stopActiveTts();
         showScreen("model");
         statusText.textContent = "建模仪式进行中";
         modelLog.innerHTML = "";
@@ -2619,6 +2793,7 @@
           const reminder = "我在听，你可以继续说。";
           callCaption.textContent = `实时转写: ${reminder}`;
           speakText(reminder, {
+            speaker: "digital",
             rate: 1,
             onstart: () => {
               speakingNow = true;
@@ -2640,6 +2815,7 @@
         callCaption.textContent = `实时转写: ${response}`;
 
         speakText(response, {
+          speaker: "digital",
           rate: 1,
           onstart: () => {
             speakingNow = true;
@@ -2750,6 +2926,7 @@
 
         setAvatarState(callAvatar, callAvatarMeta, "speaking", `${activeContact.name} 已接通`);
         speakText("我在，告诉我你现在最想推进的事情。", {
+          speaker: "digital",
           rate: 1,
           onstart: () => {
             speakingNow = true;
@@ -2767,6 +2944,7 @@
 
       function stopCallSession() {
         if (!callActive) {
+          stopActiveTts();
           clearCallTimers();
           stopCallRecognition();
           setWaveIdle(callWaveBars);
@@ -2777,7 +2955,7 @@
         speakingNow = false;
         clearCallTimers();
         stopCallRecognition();
-        window.speechSynthesis?.cancel();
+        stopActiveTts();
         setWaveIdle(callWaveBars);
         callStateEl.textContent = "通话已结束";
 
