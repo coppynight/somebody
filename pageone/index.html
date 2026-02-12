@@ -3,47 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Voice Twin Call Flow Prototype</title>
+    <title>Voice Twin Mobile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;family=Orbitron:wght@500;700&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Orbitron:wght@500;700&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --bg0: #04070f;
-        --bg1: #0a1121;
-        --bg2: #101b32;
-        --line: rgba(126, 167, 231, 0.28);
-        --text: #e9f1ff;
-        --muted: #87a1cc;
-        --cyan: #42e8ff;
-        --blue: #5077ff;
-        --violet: #8a75ff;
-        --amber: #e6bb62;
-        --orange: #f5cd7f;
-        --danger: #ca5c73;
+        --bg0: #030612;
+        --bg1: #0a1020;
+        --bg2: #101a31;
+        --line: rgba(135, 178, 247, 0.26);
+        --text: #eaf3ff;
+        --muted: #89a4cf;
+        --cyan: #41e8ff;
+        --blue: #4f74ff;
+        --violet: #8d77ff;
+        --mint: #5effbf;
+        --danger: #cc6078;
       }
 
       * {
         box-sizing: border-box;
       }
 
+      html,
       body {
         margin: 0;
+        min-height: 100%;
+      }
+
+      body {
         min-height: 100vh;
         display: grid;
         place-items: center;
-        padding: 16px;
+        padding: 14px;
         font-family: "Noto Sans SC", sans-serif;
         color: var(--text);
         background:
-          radial-gradient(circle at 10% 4%, rgba(66, 232, 255, 0.2), transparent 30%),
-          radial-gradient(circle at 90% 8%, rgba(138, 117, 255, 0.18), transparent 34%),
-          radial-gradient(circle at 50% 96%, rgba(80, 119, 255, 0.16), transparent 36%),
-          linear-gradient(155deg, var(--bg0), var(--bg1) 52%, var(--bg2));
-        position: relative;
+          radial-gradient(circle at 8% 6%, rgba(65, 232, 255, 0.2), transparent 30%),
+          radial-gradient(circle at 92% 8%, rgba(141, 119, 255, 0.18), transparent 32%),
+          radial-gradient(circle at 50% 98%, rgba(79, 116, 255, 0.16), transparent 36%),
+          linear-gradient(156deg, var(--bg0), var(--bg1) 54%, var(--bg2));
         overflow: hidden;
       }
 
@@ -53,36 +56,36 @@
         inset: 0;
         pointer-events: none;
         background:
-          linear-gradient(rgba(76, 107, 163, 0.06) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(76, 107, 163, 0.06) 1px, transparent 1px);
-        background-size: 42px 42px;
-        mask-image: radial-gradient(circle at center, black 20%, transparent 80%);
+          linear-gradient(rgba(93, 126, 186, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(93, 126, 186, 0.06) 1px, transparent 1px);
+        background-size: 38px 38px;
+        mask-image: radial-gradient(circle at center, black 18%, transparent 82%);
       }
 
       .phone-shell {
         width: min(430px, 100%);
         border-radius: 36px;
-        border: 1px solid rgba(147, 191, 255, 0.3);
+        border: 1px solid rgba(133, 175, 240, 0.3);
         padding: 8px;
         background:
-          linear-gradient(170deg, rgba(16, 26, 47, 0.86), rgba(8, 12, 24, 0.98)),
-          radial-gradient(circle at 12% 0%, rgba(66, 232, 255, 0.16), transparent 38%);
+          linear-gradient(170deg, rgba(16, 26, 47, 0.9), rgba(7, 12, 24, 0.98)),
+          radial-gradient(circle at 12% 0%, rgba(65, 232, 255, 0.15), transparent 38%);
         box-shadow:
-          0 30px 72px rgba(2, 5, 14, 0.72),
+          0 30px 70px rgba(2, 5, 14, 0.76),
           0 0 0 1px rgba(122, 171, 246, 0.12);
       }
 
       .phone {
-        height: min(860px, calc(100vh - 32px));
+        height: min(860px, calc(100vh - 28px));
         min-height: 700px;
         border-radius: 28px;
-        border: 1px solid rgba(133, 170, 221, 0.24);
+        border: 1px solid rgba(128, 165, 219, 0.24);
         overflow: hidden;
         position: relative;
         background:
-          radial-gradient(circle at 84% -10%, rgba(66, 232, 255, 0.24), transparent 34%),
-          radial-gradient(circle at 10% 100%, rgba(138, 117, 255, 0.18), transparent 34%),
-          linear-gradient(180deg, #0d1428, #0a1020 56%, #070d19);
+          radial-gradient(circle at 84% -10%, rgba(65, 232, 255, 0.24), transparent 34%),
+          radial-gradient(circle at 8% 104%, rgba(141, 119, 255, 0.18), transparent 35%),
+          linear-gradient(180deg, #0d1428, #091121 58%, #060d18);
       }
 
       .notch {
@@ -90,11 +93,11 @@
         top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        width: 118px;
+        width: 116px;
         height: 24px;
         border-radius: 999px;
-        background: rgba(35, 45, 57, 0.78);
-        z-index: 9;
+        background: rgba(31, 43, 60, 0.78);
+        z-index: 8;
       }
 
       .app {
@@ -130,7 +133,7 @@
         overflow-y: auto;
         opacity: 0;
         pointer-events: none;
-        transform: translateY(10px) scale(0.987);
+        transform: translateY(12px) scale(0.985);
         transition: opacity 0.3s ease, transform 0.3s ease;
       }
 
@@ -146,7 +149,7 @@
         padding: 14px;
         background:
           linear-gradient(180deg, rgba(20, 33, 59, 0.86), rgba(12, 21, 40, 0.9)),
-          radial-gradient(circle at 90% 0%, rgba(66, 232, 255, 0.14), transparent 42%);
+          radial-gradient(circle at 90% 0%, rgba(65, 232, 255, 0.14), transparent 42%);
         position: relative;
         overflow: hidden;
       }
@@ -158,7 +161,7 @@
         top: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--amber));
+        background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--mint));
       }
 
       .hero h1 {
@@ -194,14 +197,14 @@
         border: 1px solid rgba(131, 168, 224, 0.36);
         background:
           linear-gradient(145deg, rgba(32, 47, 78, 0.88), rgba(19, 31, 54, 0.88)),
-          radial-gradient(circle at 20% 10%, rgba(66, 232, 255, 0.16), transparent 46%);
+          radial-gradient(circle at 20% 10%, rgba(65, 232, 255, 0.16), transparent 46%);
         color: #d9ecff;
         font: inherit;
         font-weight: 700;
         display: grid;
         place-items: center;
         cursor: pointer;
-        box-shadow: inset 0 0 14px rgba(66, 232, 255, 0.05);
+        box-shadow: inset 0 0 14px rgba(65, 232, 255, 0.05);
       }
 
       .card {
@@ -210,74 +213,11 @@
         border: 1px solid rgba(126, 163, 219, 0.25);
         background:
           linear-gradient(180deg, rgba(19, 30, 52, 0.82), rgba(12, 20, 37, 0.9)),
-          radial-gradient(circle at 94% 0%, rgba(80, 119, 255, 0.14), transparent 40%);
+          radial-gradient(circle at 94% 0%, rgba(79, 116, 255, 0.14), transparent 40%);
         padding: 10px;
         box-shadow:
           0 12px 28px rgba(6, 10, 20, 0.45),
           inset 0 0 0 1px rgba(159, 196, 255, 0.04);
-      }
-
-      .question-label {
-        margin: 0;
-        font-size: 11px;
-        color: var(--muted);
-      }
-
-      .question-text {
-        margin: 6px 0 0;
-        font-size: 14px;
-        line-height: 1.55;
-      }
-
-      .progress-compact {
-        margin-top: 8px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      .meter {
-        border: 1px solid rgba(126, 152, 197, 0.26);
-        border-radius: 12px;
-        background: rgba(16, 25, 45, 0.78);
-        padding: 7px;
-      }
-
-      .meter-head {
-        display: flex;
-        justify-content: space-between;
-        font-size: 11px;
-      }
-
-      .meter-head span {
-        color: var(--muted);
-      }
-
-      .track {
-        margin-top: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: rgba(125, 151, 199, 0.2);
-        overflow: hidden;
-      }
-
-      .fill {
-        height: 100%;
-        width: 0;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--cyan), var(--blue));
-        transition: width 0.35s ease;
-      }
-
-      .fill.voice {
-        background: linear-gradient(90deg, #88d4ff, var(--violet));
-      }
-
-      .round-note {
-        margin: 8px 0 0;
-        text-align: center;
-        font-size: 11px;
-        color: var(--muted);
       }
 
       .setup-screen {
@@ -297,7 +237,7 @@
         padding: 14px;
       }
 
-      .setup-question-card .question-text {
+      .question-text {
         margin: 0;
         min-height: 128px;
         display: grid;
@@ -319,9 +259,20 @@
         color: #b6cdf5;
       }
 
-      .setup-progress .track {
+      .track {
         margin-top: 0;
         height: 4px;
+        border-radius: 999px;
+        background: rgba(125, 151, 199, 0.2);
+        overflow: hidden;
+      }
+
+      .fill {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--cyan), var(--blue));
+        transition: width 0.35s ease;
       }
 
       .setup-nav {
@@ -368,7 +319,7 @@
         width: 118px;
         height: 118px;
         border-style: dotted;
-        border-color: rgba(141, 109, 255, 0.42);
+        border-color: rgba(141, 119, 255, 0.42);
         animation: spinBack 12s linear infinite;
       }
 
@@ -378,7 +329,7 @@
         width: 118px;
         height: 56px;
         border-radius: 999px;
-        background: linear-gradient(180deg, rgba(53, 201, 255, 0.2), transparent);
+        background: linear-gradient(180deg, rgba(65, 232, 255, 0.2), transparent);
       }
 
       .avatar-body {
@@ -395,8 +346,7 @@
         width: 74px;
         height: 74px;
         border-radius: 50%;
-        background:
-          radial-gradient(circle at 32% 30%, rgba(255, 238, 224, 0.96), rgba(241, 196, 162, 0.94));
+        background: radial-gradient(circle at 32% 30%, rgba(255, 238, 224, 0.96), rgba(241, 196, 162, 0.94));
         box-shadow:
           0 5px 12px rgba(11, 20, 38, 0.38),
           inset 0 -6px 10px rgba(189, 130, 97, 0.25);
@@ -471,8 +421,8 @@
       }
 
       .avatar-stage.listening .avatar-ring.r1 {
-        border-color: rgba(53, 201, 255, 0.66);
-        box-shadow: 0 0 14px rgba(53, 201, 255, 0.24);
+        border-color: rgba(65, 232, 255, 0.66);
+        box-shadow: 0 0 14px rgba(65, 232, 255, 0.24);
       }
 
       .avatar-stage.listening .avatar-core {
@@ -512,177 +462,6 @@
         color: #a9bddf;
       }
 
-      .log-list {
-        display: grid;
-        gap: 8px;
-        max-height: 220px;
-        overflow-y: auto;
-      }
-
-      .bubble {
-        font-size: 13px;
-        line-height: 1.5;
-        padding: 8px 10px;
-        border-radius: 12px;
-      }
-
-      .bubble.assistant {
-        margin-right: 15%;
-        background: rgba(33, 49, 82, 0.82);
-        border: 1px solid rgba(117, 142, 186, 0.34);
-      }
-
-      .bubble.user {
-        margin-left: 15%;
-        background: rgba(51, 39, 78, 0.8);
-        border: 1px solid rgba(141, 109, 255, 0.28);
-      }
-
-      .voice-panel {
-        margin-top: 10px;
-        border-radius: 14px;
-        border: 1px solid rgba(125, 151, 196, 0.28);
-        background: rgba(18, 28, 49, 0.84);
-        padding: 10px;
-        box-shadow: 0 8px 20px rgba(7, 12, 22, 0.32);
-      }
-
-      .live-caption {
-        margin: 0;
-        font-size: 12px;
-        color: #a8bcde;
-      }
-
-      .wave {
-        margin-top: 8px;
-        height: 42px;
-        border-radius: 10px;
-        border: 1px solid rgba(122, 147, 191, 0.3);
-        display: grid;
-        grid-template-columns: repeat(20, minmax(0, 1fr));
-        gap: 3px;
-        align-items: end;
-        padding: 6px;
-        background:
-          linear-gradient(180deg, rgba(20, 32, 54, 0.82), rgba(15, 24, 43, 0.92)),
-          repeating-linear-gradient(
-            90deg,
-            rgba(124, 155, 205, 0.12) 0 1px,
-            transparent 1px 7px
-          );
-      }
-
-      .wave i {
-        height: 16%;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #5fd6ff, #6b84ff);
-        transition: height 0.2s ease;
-      }
-
-      .call-btn {
-        margin-top: 9px;
-        width: 100%;
-        border: 0;
-        border-radius: 13px;
-        padding: 12px;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-        color: #f4f8ff;
-        background: linear-gradient(120deg, var(--cyan), var(--blue));
-      }
-
-      .call-btn.listening {
-        color: #614010;
-        background: linear-gradient(120deg, var(--amber), #efc66d);
-        animation: pulse 1.2s ease-in-out infinite;
-      }
-
-      .danger-btn {
-        margin-top: 8px;
-        width: 100%;
-        border: 1px solid rgba(194, 92, 101, 0.56);
-        border-radius: 12px;
-        padding: 10px;
-        font: inherit;
-        color: #f8d6db;
-        background: rgba(93, 31, 40, 0.5);
-        cursor: pointer;
-      }
-
-      .call-timer {
-        margin: 8px 0 0;
-        text-align: center;
-        font-family: "Noto Sans SC", sans-serif;
-        font-size: 1.1rem;
-        letter-spacing: 0.02em;
-      }
-
-      .call-state {
-        margin: 4px 0 0;
-        text-align: center;
-        color: var(--muted);
-        font-size: 12px;
-      }
-
-      .form-head {
-        margin: 0 0 8px;
-        font-size: 13px;
-      }
-
-      .form-label {
-        display: block;
-        margin-top: 8px;
-        font-size: 12px;
-        color: var(--muted);
-      }
-
-      .text-input {
-        width: 100%;
-        margin-top: 6px;
-        border: 1px solid rgba(130, 163, 219, 0.34);
-        border-radius: 11px;
-        background: rgba(12, 21, 40, 0.82);
-        color: var(--text);
-        padding: 10px;
-        font: inherit;
-      }
-
-      .primary-btn,
-      .secondary-btn {
-        width: 100%;
-        margin-top: 8px;
-        border-radius: 11px;
-        padding: 11px;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .primary-btn {
-        border: 0;
-        color: #f4f8ff;
-        background: linear-gradient(120deg, var(--cyan), var(--blue) 58%, var(--violet));
-        box-shadow: 0 8px 18px rgba(58, 96, 200, 0.32);
-      }
-
-      .secondary-btn {
-        border: 1px solid rgba(125, 158, 211, 0.34);
-        color: #d3e5ff;
-        background: rgba(19, 31, 55, 0.78);
-      }
-
-      .secondary-btn:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
-
-      .form-note {
-        margin: 8px 0 0;
-        font-size: 12px;
-        color: #a3b7d8;
-      }
-
       .model-wrap {
         margin-top: 12px;
         border-radius: 22px;
@@ -690,7 +469,7 @@
         min-height: 520px;
         padding: 16px;
         background:
-          radial-gradient(circle at center, rgba(66, 232, 255, 0.17), rgba(13, 21, 37, 0.88)),
+          radial-gradient(circle at center, rgba(65, 232, 255, 0.17), rgba(13, 21, 37, 0.88)),
           linear-gradient(180deg, rgba(18, 29, 52, 0.94), rgba(10, 17, 31, 0.96));
         box-shadow: 0 18px 40px rgba(3, 8, 20, 0.5);
       }
@@ -713,7 +492,7 @@
       .ring {
         width: 172px;
         height: 172px;
-        border: 2px solid rgba(66, 232, 255, 0.55);
+        border: 2px solid rgba(65, 232, 255, 0.55);
         animation: spin 8s linear infinite;
       }
 
@@ -735,7 +514,7 @@
         border-radius: 50%;
         background: radial-gradient(circle, #f4fbff 0%, #9be6ff 44%, #5aa8ff 100%);
         box-shadow:
-          0 0 20px rgba(66, 232, 255, 0.5),
+          0 0 20px rgba(65, 232, 255, 0.5),
           0 0 34px rgba(138, 117, 255, 0.3);
         animation: corePulse 1.6s ease-in-out infinite;
       }
@@ -804,7 +583,7 @@
         border-radius: 14px;
         background:
           linear-gradient(180deg, rgba(21, 33, 57, 0.82), rgba(13, 22, 39, 0.88)),
-          radial-gradient(circle at 100% 0%, rgba(80, 119, 255, 0.12), transparent 42%);
+          radial-gradient(circle at 100% 0%, rgba(79, 116, 255, 0.12), transparent 42%);
         padding: 9px;
         display: flex;
         justify-content: space-between;
@@ -852,6 +631,129 @@
         cursor: pointer;
       }
 
+      .call-timer {
+        margin: 8px 0 0;
+        text-align: center;
+        font-family: "Orbitron", "Noto Sans SC", sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.02em;
+      }
+
+      .call-state {
+        margin: 4px 0 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .voice-panel {
+        margin-top: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(125, 151, 196, 0.28);
+        background: rgba(18, 28, 49, 0.84);
+        padding: 10px;
+        box-shadow: 0 8px 20px rgba(7, 12, 22, 0.32);
+      }
+
+      .live-caption {
+        margin: 0;
+        font-size: 12px;
+        color: #a8bcde;
+        min-height: 34px;
+      }
+
+      .wave {
+        margin-top: 8px;
+        height: 42px;
+        border-radius: 10px;
+        border: 1px solid rgba(122, 147, 191, 0.3);
+        display: grid;
+        grid-template-columns: repeat(24, minmax(0, 1fr));
+        gap: 3px;
+        align-items: end;
+        padding: 6px;
+        background:
+          linear-gradient(180deg, rgba(20, 32, 54, 0.82), rgba(15, 24, 43, 0.92)),
+          repeating-linear-gradient(90deg, rgba(124, 155, 205, 0.12) 0 1px, transparent 1px 7px);
+      }
+
+      .wave i {
+        height: 16%;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #5fd6ff, #6b84ff);
+        transition: height 0.2s ease;
+      }
+
+      .danger-btn {
+        margin-top: 8px;
+        width: 100%;
+        border: 1px solid rgba(204, 96, 120, 0.56);
+        border-radius: 12px;
+        padding: 10px;
+        font: inherit;
+        color: #f8d6db;
+        background: rgba(99, 31, 44, 0.5);
+        cursor: pointer;
+      }
+
+      .form-head {
+        margin: 0 0 8px;
+        font-size: 13px;
+      }
+
+      .form-label {
+        display: block;
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .text-input {
+        width: 100%;
+        margin-top: 6px;
+        border: 1px solid rgba(130, 163, 219, 0.34);
+        border-radius: 11px;
+        background: rgba(12, 21, 40, 0.82);
+        color: var(--text);
+        padding: 10px;
+        font: inherit;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+        margin-top: 8px;
+        border-radius: 11px;
+        padding: 11px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        border: 0;
+        color: #f4f8ff;
+        background: linear-gradient(120deg, var(--cyan), var(--blue) 58%, var(--violet));
+        box-shadow: 0 8px 18px rgba(58, 96, 200, 0.32);
+      }
+
+      .secondary-btn {
+        border: 1px solid rgba(125, 158, 211, 0.34);
+        color: #d3e5ff;
+        background: rgba(19, 31, 55, 0.78);
+      }
+
+      .secondary-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .form-note {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: #a3b7d8;
+      }
+
       @keyframes spin {
         to {
           transform: rotate(360deg);
@@ -871,16 +773,6 @@
         }
         50% {
           transform: scale(1.16);
-        }
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(255, 186, 136, 0.35);
-        }
-        50% {
-          box-shadow: 0 0 0 7px rgba(255, 186, 136, 0.1);
         }
       }
 
@@ -929,18 +821,6 @@
         }
       }
 
-      @keyframes sweep {
-        0% {
-          transform: translateX(-120%);
-        }
-        50% {
-          transform: translateX(120%);
-        }
-        100% {
-          transform: translateX(120%);
-        }
-      }
-
       @media (max-width: 420px) {
         .phone-shell {
           border-radius: 30px;
@@ -961,11 +841,11 @@
         <div class="app">
           <header class="status">
             <strong>VOICE TWIN</strong>
-            <span id="status-text">与创建助理通话中</span>
+            <span id="status-text">准备开始创建</span>
           </header>
 
           <div class="screen-wrap">
-            <section class="screen active setup-screen" id="setup-screen">
+            <section class="screen setup-screen" id="setup-screen">
               <section class="avatar-wrap setup-avatar-wrap">
                 <div class="avatar-stage avatar-mentor listening" id="setup-avatar">
                   <i class="avatar-ring r1"></i>
@@ -981,6 +861,7 @@
                   </div>
                 </div>
               </section>
+
               <section class="card setup-question-card">
                 <p class="question-text" id="setup-question">你最希望这个数字人长期帮你完成什么？</p>
                 <div class="setup-progress">
@@ -998,7 +879,7 @@
             <section class="screen" id="model-screen">
               <article class="hero">
                 <h1>建模仪式</h1>
-                <p>正在把你的表达和声音融合为数字人格。</p>
+                <p>正在融合人格与语音特征。</p>
               </article>
 
               <article class="model-wrap">
@@ -1007,7 +888,7 @@
                   <div class="core"></div>
                 </div>
                 <div class="model-title" id="model-title">初始化建模引擎</div>
-                <div class="model-sub" id="model-sub">检查采访素材...</div>
+                <div class="model-sub" id="model-sub">检查采集结构...</div>
                 <div class="model-label"><strong>进度</strong><span id="model-percent">0%</span></div>
                 <div class="track"><div class="fill" id="model-fill" style="width: 0%"></div></div>
                 <ul class="model-log" id="model-log"></ul>
@@ -1038,7 +919,7 @@
                     <div class="contact-avatar" id="self-contact-avatar"></div>
                     <div>
                       <p class="contact-name" id="self-contact-name">我的数字人（你）</p>
-                      <p class="contact-sub" id="self-contact-sub">语气与思路已完成建模</p>
+                      <p class="contact-sub" id="self-contact-sub">人格与语音建模已完成</p>
                     </div>
                   </div>
                   <button class="mini-call" data-contact-id="self">语音电话</button>
@@ -1048,7 +929,7 @@
               <section class="card">
                 <div class="contacts-head">
                   <span>其他数字人</span>
-                  <span class="tag" id="contacts-count-tag">3</span>
+                  <span class="tag" id="contacts-count-tag">0</span>
                 </div>
                 <div id="contact-list"></div>
               </section>
@@ -1081,7 +962,7 @@
               <p class="call-state" id="call-state">语音通话已接通</p>
 
               <section class="voice-panel">
-                <p class="live-caption" id="call-caption">实时转写: 帮我把今天工作再收敛一下...</p>
+                <p class="live-caption" id="call-caption">实时转写: 通话已接通...</p>
                 <div class="wave" id="call-wave"></div>
                 <button class="danger-btn" id="hangup-btn">挂断电话</button>
               </section>
@@ -1109,17 +990,13 @@
               </article>
 
               <section class="card">
-                <div class="form-head">
-                  <strong>查询</strong>
-                </div>
+                <div class="form-head"><strong>查询</strong></div>
                 <button class="primary-btn" id="query-profile-btn">查询当前信息</button>
                 <p class="form-note" id="query-profile-result">尚未查询。</p>
               </section>
 
               <section class="card">
-                <div class="form-head">
-                  <strong>更新</strong>
-                </div>
+                <div class="form-head"><strong>更新</strong></div>
                 <label class="form-label" for="update-name-input">显示名称</label>
                 <input class="text-input" id="update-name-input" type="text" placeholder="我的数字人（你）" />
                 <label class="form-label" for="update-style-select">语音风格</label>
@@ -1133,9 +1010,7 @@
               </section>
 
               <section class="card">
-                <div class="form-head">
-                  <strong>分享</strong>
-                </div>
+                <div class="form-head"><strong>分享</strong></div>
                 <input class="text-input" id="share-code-output" type="text" value="VT-SHARE-0000" readonly />
                 <button class="primary-btn" id="gen-share-code-btn">生成分享码</button>
                 <button class="secondary-btn" id="copy-share-code-btn">复制分享码</button>
@@ -1149,6 +1024,119 @@
     </div>
 
     <script>
+      const STORAGE_KEY = "voiceTwinState.v1";
+      const setupQuestions = [
+        "你最希望这个数字人长期帮你完成什么？",
+        "当目标冲突时，你通常怎么取舍？",
+        "请讲一次你主动调整策略的经历。",
+        "请用自然语速讲 40 秒，描述你理想的一天。"
+      ];
+
+      const styleLabels = {
+        balanced: "平衡",
+        calm: "沉稳",
+        direct: "干练"
+      };
+
+      const groupPalette = {
+        analysts: { a: "#88619a", b: "#b095bd" },
+        diplomats: { a: "#33a474", b: "#73c3a0" },
+        sentinels: { a: "#4298b4", b: "#82c2d5" },
+        explorers: { a: "#e4ae3a", b: "#f0d287" }
+      };
+
+      function deepCopy(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function createDefaultState() {
+        return {
+          onboardingDone: false,
+          setup: {
+            index: 0,
+            answers: ["", "", "", ""]
+          },
+          model: {
+            builtAt: "",
+            personaSummary: "",
+            voiceSummary: ""
+          },
+          selfProfile: {
+            id: "self",
+            digitalId: "twin_self_001",
+            name: "我的数字人（你）",
+            style: "balanced",
+            shareCode: "VT-SHARE-0000",
+            group: "analysts"
+          },
+          contacts: [
+            { id: "planner", name: "执行规划师", sub: "目标拆解与优先级建议", group: "sentinels" },
+            { id: "coach", name: "复盘教练", sub: "每日回顾与改进建议", group: "diplomats" },
+            { id: "creator", name: "内容共创体", sub: "口播与表达优化建议", group: "explorers" }
+          ]
+        };
+      }
+
+      function normalizeState(saved) {
+        const base = createDefaultState();
+        if (!saved || typeof saved !== "object") return base;
+
+        const result = deepCopy(base);
+        result.onboardingDone = Boolean(saved.onboardingDone);
+
+        if (saved.setup && typeof saved.setup === "object") {
+          result.setup.index = Number.isInteger(saved.setup.index) ? saved.setup.index : 0;
+          const answers = Array.isArray(saved.setup.answers) ? saved.setup.answers : [];
+          result.setup.answers = setupQuestions.map((_, idx) => String(answers[idx] || ""));
+        }
+
+        if (saved.model && typeof saved.model === "object") {
+          result.model.builtAt = String(saved.model.builtAt || "");
+          result.model.personaSummary = String(saved.model.personaSummary || "");
+          result.model.voiceSummary = String(saved.model.voiceSummary || "");
+        }
+
+        if (saved.selfProfile && typeof saved.selfProfile === "object") {
+          result.selfProfile.name = String(saved.selfProfile.name || result.selfProfile.name);
+          result.selfProfile.digitalId = String(saved.selfProfile.digitalId || result.selfProfile.digitalId);
+          result.selfProfile.style = String(saved.selfProfile.style || result.selfProfile.style);
+          result.selfProfile.shareCode = String(saved.selfProfile.shareCode || result.selfProfile.shareCode);
+          result.selfProfile.group = String(saved.selfProfile.group || result.selfProfile.group);
+        }
+
+        if (Array.isArray(saved.contacts)) {
+          result.contacts = saved.contacts
+            .filter((item) => item && typeof item === "object" && item.id && item.name)
+            .map((item) => ({
+              id: String(item.id),
+              name: String(item.name),
+              sub: String(item.sub || "语音数字人"),
+              group: String(item.group || "sentinels")
+            }))
+            .filter((item) => item.id !== "self");
+        }
+
+        result.setup.index = Math.min(setupQuestions.length - 1, Math.max(0, result.setup.index));
+        return result;
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return createDefaultState();
+          const parsed = JSON.parse(raw);
+          return normalizeState(parsed);
+        } catch {
+          return createDefaultState();
+        }
+      }
+
+      let state = loadState();
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
       const statusText = document.getElementById("status-text");
       const screens = {
         setup: document.getElementById("setup-screen"),
@@ -1158,21 +1146,23 @@
         add: document.getElementById("add-screen"),
         settings: document.getElementById("settings-screen")
       };
+      let currentScreen = "setup";
 
       function showScreen(name) {
         Object.values(screens).forEach((screen) => screen.classList.remove("active"));
         screens[name].classList.add("active");
-      }
+        currentScreen = name;
 
-      function appendBubble(container, role, text) {
-        const bubble = document.createElement("div");
-        bubble.className = `bubble ${role}`;
-        bubble.textContent = text;
-        container.appendChild(bubble);
-        container.scrollTop = container.scrollHeight;
+        if (name !== "setup") {
+          stopSetupListening();
+        }
+        if (name !== "call") {
+          stopCallSession();
+        }
       }
 
       function buildWave(container, count) {
+        container.innerHTML = "";
         for (let i = 0; i < count; i += 1) {
           const bar = document.createElement("i");
           container.appendChild(bar);
@@ -1246,6 +1236,48 @@
         if (labelText && labelEl) labelEl.textContent = labelText;
       }
 
+      function pickChineseVoice() {
+        if (!window.speechSynthesis) return null;
+        const voices = window.speechSynthesis.getVoices();
+        if (!voices || !voices.length) return null;
+        return (
+          voices.find((voice) => voice.lang && voice.lang.toLowerCase().startsWith("zh")) ||
+          voices.find((voice) => voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
+          null
+        );
+      }
+
+      let speechReady = false;
+      if (window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          speechReady = true;
+        };
+        speechReady = true;
+      }
+
+      function speakText(text, options = {}) {
+        if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+          if (options.onend) options.onend();
+          return null;
+        }
+
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "zh-CN";
+        utter.rate = options.rate || 1;
+        utter.pitch = options.pitch || 1;
+        utter.volume = 1;
+        const voice = pickChineseVoice();
+        if (voice) utter.voice = voice;
+
+        if (options.onstart) utter.onstart = options.onstart;
+        if (options.onend) utter.onend = options.onend;
+        if (options.onerror) utter.onerror = options.onerror;
+
+        window.speechSynthesis.speak(utter);
+        return utter;
+      }
+
       const setupQuestionEl = document.getElementById("setup-question");
       const setupProgressText = document.getElementById("setup-progress-text");
       const setupProgressFill = document.getElementById("setup-progress-fill");
@@ -1253,37 +1285,131 @@
       const setupNextBtn = document.getElementById("setup-next-btn");
       const setupAvatar = document.getElementById("setup-avatar");
 
-      const setupQuestions = [
-        "你最希望这个数字人长期帮你完成什么？",
-        "当目标冲突时，你通常怎么取舍？",
-        "请讲一次你主动调整策略的经历。",
-        "请用自然语速讲 40 秒，描述你理想的一天。"
-      ];
-      let setupIndex = 0;
+      const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+      let setupRecognizer = null;
+      let setupListeningEnabled = false;
+      let setupSpeechToken = 0;
 
-      function renderSetupQuestion() {
-        setupQuestionEl.textContent = setupQuestions[setupIndex];
-        setupProgressText.textContent = `${setupIndex + 1} / ${setupQuestions.length}`;
-        setupProgressFill.style.width = `${((setupIndex + 1) / setupQuestions.length) * 100}%`;
-        setupPrevBtn.disabled = setupIndex === 0;
-        setupNextBtn.textContent = setupIndex === setupQuestions.length - 1 ? "开始建模" : "下一题";
-        statusText.textContent = `创建助理采集中 · ${setupIndex + 1}/${setupQuestions.length}`;
+      function createRecognizer() {
+        if (!SpeechRecognitionClass) return null;
+        const recognition = new SpeechRecognitionClass();
+        recognition.lang = "zh-CN";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 1;
+        return recognition;
+      }
+
+      function stopSetupListening() {
+        setupListeningEnabled = false;
+        if (setupRecognizer) {
+          try {
+            setupRecognizer.onend = null;
+            setupRecognizer.stop();
+          } catch {}
+          setupRecognizer = null;
+        }
+      }
+
+      function startSetupListening() {
+        if (!SpeechRecognitionClass || currentScreen !== "setup") return;
+
+        stopSetupListening();
+        setupListeningEnabled = true;
+        const indexAtStart = state.setup.index;
+        const recognition = createRecognizer();
+        if (!recognition) return;
+
+        setupRecognizer = recognition;
+        recognition.onresult = (event) => {
+          let finalText = "";
+          for (let i = event.resultIndex; i < event.results.length; i += 1) {
+            const piece = event.results[i][0].transcript.trim();
+            if (event.results[i].isFinal && piece) {
+              finalText += `${piece} `;
+            }
+          }
+
+          if (!finalText) return;
+          if (state.setup.index !== indexAtStart) return;
+
+          const merged = `${state.setup.answers[indexAtStart] || ""} ${finalText}`.trim();
+          state.setup.answers[indexAtStart] = merged.slice(0, 280);
+          saveState();
+          statusText.textContent = `创建助理采集中 · 已记录第 ${indexAtStart + 1} 题`;
+        };
+
+        recognition.onerror = () => {
+          statusText.textContent = `创建助理采集中 · ${state.setup.index + 1}/${setupQuestions.length}`;
+        };
+
+        recognition.onend = () => {
+          if (setupListeningEnabled && currentScreen === "setup") {
+            try {
+              recognition.start();
+            } catch {}
+          }
+        };
+
+        try {
+          recognition.start();
+        } catch {}
+      }
+
+      function promptSetupQuestion() {
+        if (currentScreen !== "setup") return;
+        setupSpeechToken += 1;
+        const token = setupSpeechToken;
+        const index = state.setup.index;
+        const question = setupQuestions[index];
+
+        stopSetupListening();
+        setAvatarState(setupAvatar, null, "thinking");
+
+        speakText(question, {
+          rate: 0.96,
+          onstart: () => {
+            if (token !== setupSpeechToken) return;
+            setAvatarState(setupAvatar, null, "speaking");
+            statusText.textContent = `创建助理提问中 · ${index + 1}/${setupQuestions.length}`;
+          },
+          onend: () => {
+            if (token !== setupSpeechToken || currentScreen !== "setup") return;
+            setAvatarState(setupAvatar, null, "listening");
+            statusText.textContent = `创建助理采集中 · ${index + 1}/${setupQuestions.length}`;
+            startSetupListening();
+          }
+        });
+      }
+
+      function renderSetupQuestion({ speak = false } = {}) {
+        const index = state.setup.index;
+        setupQuestionEl.textContent = setupQuestions[index];
+        setupProgressText.textContent = `${index + 1} / ${setupQuestions.length}`;
+        setupProgressFill.style.width = `${((index + 1) / setupQuestions.length) * 100}%`;
+        setupPrevBtn.disabled = index === 0;
+        setupNextBtn.textContent = index === setupQuestions.length - 1 ? "开始建模" : "下一题";
+        statusText.textContent = `创建助理采集中 · ${index + 1}/${setupQuestions.length}`;
+        saveState();
+
+        if (speak) {
+          promptSetupQuestion();
+        }
       }
 
       setupPrevBtn.addEventListener("click", () => {
-        if (setupIndex === 0) return;
-        setupIndex -= 1;
-        setAvatarState(setupAvatar, null, "thinking");
-        renderSetupQuestion();
+        if (state.setup.index === 0) return;
+        state.setup.index -= 1;
+        renderSetupQuestion({ speak: true });
       });
 
       setupNextBtn.addEventListener("click", () => {
-        if (setupIndex < setupQuestions.length - 1) {
-          setupIndex += 1;
-          setAvatarState(setupAvatar, null, "listening");
-          renderSetupQuestion();
+        if (state.setup.index < setupQuestions.length - 1) {
+          state.setup.index += 1;
+          renderSetupQuestion({ speak: true });
           return;
         }
+
         setAvatarState(setupAvatar, null, "speaking");
         statusText.textContent = "采集完成 · 准备建模";
         runModeling();
@@ -1301,12 +1427,46 @@
         { title: "完成校准", sub: "输出可通话数字人...", log: "数字人可用" }
       ];
 
+      function buildHiddenModelFromAnswers() {
+        const answers = state.setup.answers.map((item) => item.trim()).filter(Boolean);
+        const merged = answers.join(" ");
+        const text = merged || "目标明确，表达稳定，偏向务实执行。";
+
+        let personaSummary = "稳健、以目标为导向，倾向先聚焦关键任务再展开。";
+        if (text.includes("复盘") || text.includes("总结")) {
+          personaSummary = "重视复盘和持续改进，偏好可执行、可追踪的行动策略。";
+        }
+        if (text.includes("创作") || text.includes("表达")) {
+          personaSummary = "表达驱动，关注内容结构和观点传达效率。";
+        }
+
+        let voiceSummary = "语速中等、语气平稳，适合日常协作与复盘场景。";
+        if (text.includes("快速") || text.includes("效率")) {
+          voiceSummary = "语速偏快、指令清晰，适合高密度任务推进。";
+        }
+        if (text.includes("温和") || text.includes("陪伴")) {
+          voiceSummary = "语调偏柔和，强调陪伴与鼓励感。";
+        }
+
+        state.model.builtAt = new Date().toISOString();
+        state.model.personaSummary = personaSummary;
+        state.model.voiceSummary = voiceSummary;
+        state.onboardingDone = true;
+
+        const selfContactSubEl = document.getElementById("self-contact-sub");
+        selfContactSubEl.textContent = "人格与语音建模已完成";
+        saveState();
+      }
+
       function runModeling() {
+        stopSetupListening();
         showScreen("model");
         statusText.textContent = "建模仪式进行中";
         modelLog.innerHTML = "";
         modelFill.style.width = "0%";
         modelPercent.textContent = "0%";
+
+        buildHiddenModelFromAnswers();
 
         let idx = 0;
         function next() {
@@ -1331,44 +1491,44 @@
           modelLog.appendChild(item);
           setTimeout(() => item.classList.add("done"), 260);
           idx += 1;
-          setTimeout(next, 1250);
+          setTimeout(next, 1100);
         }
 
         setTimeout(next, 420);
       }
 
-      const selfProfile = {
-        id: "self",
-        digitalId: "twin_self_001",
-        name: "我的数字人（你）",
-        style: "balanced",
-        shareCode: "VT-SHARE-0000",
-        group: "analysts"
-      };
-      const groupPalette = {
-        analysts: { a: "#88619a", b: "#b095bd" },
-        diplomats: { a: "#33a474", b: "#73c3a0" },
-        sentinels: { a: "#4298b4", b: "#82c2d5" },
-        explorers: { a: "#e4ae3a", b: "#f0d287" }
-      };
-      const contacts = [
-        { id: "self", name: selfProfile.name, sub: "语气与思路已完成建模", group: "analysts" },
-        { id: "planner", name: "执行规划师", sub: "目标拆解与优先级建议", group: "sentinels" },
-        { id: "coach", name: "复盘教练", sub: "每日回顾与改进建议", group: "diplomats" },
-        { id: "creator", name: "内容共创体", sub: "口播与表达优化建议", group: "explorers" }
-      ];
+      function getAllContacts() {
+        const selfContact = {
+          id: "self",
+          name: state.selfProfile.name,
+          sub: "人格与语音建模已完成",
+          group: state.selfProfile.group
+        };
+        return [selfContact, ...state.contacts];
+      }
 
       const contactList = document.getElementById("contact-list");
       const contactsCountTag = document.getElementById("contacts-count-tag");
       const addEntryBtn = document.getElementById("add-entry-btn");
       const settingsEntryBtn = document.getElementById("settings-entry-btn");
 
+      const selfContactNameEl = document.getElementById("self-contact-name");
+      const selfContactSubEl = document.getElementById("self-contact-sub");
+      const selfContactAvatarEl = document.getElementById("self-contact-avatar");
+
+      function applySelfProfile() {
+        selfContactNameEl.textContent = state.selfProfile.name;
+        selfContactSubEl.textContent = "人格与语音建模已完成";
+        const palette = groupPalette[state.selfProfile.group] || groupPalette.analysts;
+        selfContactAvatarEl.style.setProperty("--contact-a", palette.a);
+        selfContactAvatarEl.style.setProperty("--contact-b", palette.b);
+      }
+
       function renderContacts() {
         contactList.innerHTML = "";
-        const others = contacts.filter((item) => item.id !== "self");
-        contactsCountTag.textContent = String(others.length);
+        contactsCountTag.textContent = String(state.contacts.length);
 
-        others.forEach((contact) => {
+        state.contacts.forEach((contact) => {
           const palette = groupPalette[contact.group] || groupPalette.sentinels;
           const row = document.createElement("div");
           row.className = "contact-item";
@@ -1387,7 +1547,8 @@
       }
 
       function openHome() {
-        stopCallListening();
+        applySelfProfile();
+        renderContacts();
         showScreen("home");
         statusText.textContent = "通讯录首页 · 可随时发起语音电话";
       }
@@ -1398,19 +1559,12 @@
       });
 
       settingsEntryBtn.addEventListener("click", () => {
-        document.getElementById("update-name-input").value = selfProfile.name;
-        document.getElementById("update-style-select").value = selfProfile.style;
-        document.getElementById("share-code-output").value = selfProfile.shareCode;
+        document.getElementById("update-name-input").value = state.selfProfile.name;
+        document.getElementById("update-style-select").value = state.selfProfile.style;
+        document.getElementById("share-code-output").value = state.selfProfile.shareCode;
         showScreen("settings");
         statusText.textContent = "我的数字人设置";
       });
-
-      const selfContactNameEl = document.getElementById("self-contact-name");
-      const selfContactSubEl = document.getElementById("self-contact-sub");
-      const selfContactAvatarEl = document.getElementById("self-contact-avatar");
-      const selfPalette = groupPalette[selfProfile.group] || groupPalette.analysts;
-      selfContactAvatarEl.style.setProperty("--contact-a", selfPalette.a);
-      selfContactAvatarEl.style.setProperty("--contact-b", selfPalette.b);
 
       const addIdInput = document.getElementById("add-id-input");
       const addIdConfirmBtn = document.getElementById("add-id-confirm-btn");
@@ -1423,21 +1577,31 @@
           addIdFeedback.textContent = "请输入有效的数字 ID。";
           return;
         }
+
         const normalizedId = rawId.toLowerCase();
-        const exists = contacts.some((item) => item.id === normalizedId);
+        if (normalizedId === state.selfProfile.digitalId.toLowerCase()) {
+          addIdFeedback.textContent = "这是你自己的数字 ID，无需重复添加。";
+          return;
+        }
+
+        const exists = state.contacts.some((item) => item.id === normalizedId);
         if (exists) {
           addIdFeedback.textContent = "该数字 ID 已存在于通讯录。";
           return;
         }
+
         const groups = ["analysts", "diplomats", "sentinels", "explorers"];
         const codeSum = [...normalizedId].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
         const group = groups[codeSum % groups.length];
-        contacts.push({
+
+        state.contacts.push({
           id: normalizedId,
           name: `数字人 ${rawId}`,
           sub: `来自 ID: ${rawId}`,
           group
         });
+
+        saveState();
         renderContacts();
         addIdFeedback.textContent = `已添加数字人: ${rawId}`;
         addIdInput.value = "";
@@ -1458,8 +1622,10 @@
       const settingsBackBtn = document.getElementById("settings-back-btn");
 
       queryProfileBtn.addEventListener("click", () => {
-        queryProfileResult.textContent =
-          `ID: ${selfProfile.digitalId} · 名称: ${selfProfile.name} · 风格: ${selfProfile.style}`;
+        const builtAt = state.model.builtAt
+          ? new Date(state.model.builtAt).toLocaleString("zh-CN")
+          : "未建模";
+        queryProfileResult.textContent = `ID: ${state.selfProfile.digitalId} · 名称: ${state.selfProfile.name} · 风格: ${styleLabels[state.selfProfile.style]} · 建模: ${builtAt}`;
       });
 
       saveProfileBtn.addEventListener("click", () => {
@@ -1469,22 +1635,19 @@
           saveProfileResult.textContent = "显示名称不能为空。";
           return;
         }
-        selfProfile.name = nextName;
-        selfProfile.style = nextStyle;
-        const selfContact = contacts.find((item) => item.id === "self");
-        if (selfContact) {
-          selfContact.name = nextName;
-          selfContact.sub = `风格: ${nextStyle}`;
-        }
-        selfContactNameEl.textContent = nextName;
-        selfContactSubEl.textContent = `风格: ${nextStyle}`;
+
+        state.selfProfile.name = nextName;
+        state.selfProfile.style = nextStyle;
+        saveState();
+        applySelfProfile();
         saveProfileResult.textContent = "已更新你的数字人信息。";
       });
 
       genShareCodeBtn.addEventListener("click", () => {
         const rand = Math.floor(1000 + Math.random() * 9000);
-        selfProfile.shareCode = `VT-SHARE-${rand}`;
-        shareCodeOutput.value = selfProfile.shareCode;
+        state.selfProfile.shareCode = `VT-SHARE-${rand}`;
+        shareCodeOutput.value = state.selfProfile.shareCode;
+        saveState();
         shareResult.textContent = "已生成新的分享码。";
       });
 
@@ -1510,40 +1673,43 @@
       const callTimerEl = document.getElementById("call-timer");
       const callStateEl = document.getElementById("call-state");
       const hangupBtn = document.getElementById("hangup-btn");
-      const callWaveBars = buildWave(document.getElementById("call-wave"), 20);
-
-      const callCaptions = [
-        "实时转写: 帮我把今天工作再收敛一点...",
-        "实时转写: 我想先做最关键那件事...",
-        "实时转写: 给我一个马上可执行的顺序..."
-      ];
-      const replyMap = {
-        self: [
-          "先做三步: 跑通主流程、验证通话体验、记录复盘结论。",
-          "你现在最该做的是先交付可演示版本，再优化细节。"
-        ],
-        planner: [
-          "建议顺序: 关键任务 60 分钟、验证 30 分钟、复盘 20 分钟。",
-          "先把目标拆成必须完成和可选优化两层。"
-        ],
-        coach: [
-          "今天结束前记录三件事: 做了什么、学到什么、下一步是什么。",
-          "你的节奏不错，建议每轮结束后加 5 分钟复盘。"
-        ],
-        creator: [
-          "先输出一句核心结论，再给两条支撑点，表达会更稳。",
-          "你可以先口述结构，再补细节，效率会更高。"
-        ]
-      };
+      const callWaveBars = buildWave(document.getElementById("call-wave"), 24);
 
       let activeContact = null;
       let callActive = false;
       let callWaveTimer = null;
       let callDurationTimer = null;
-      let callCaptionIdx = 0;
       let callDurationSec = 0;
-      let callSpeechIndex = 0;
-      const callPhaseTimers = [];
+      let callRecognizer = null;
+      let callRecognitionEnabled = false;
+      let callFallbackTimer = null;
+      let callSilenceTimer = null;
+      let speakingNow = false;
+
+      const fallbackUserPrompts = [
+        "今天我该先做哪件事？",
+        "请帮我把目标收敛到三个步骤。",
+        "我想要更稳的执行节奏。"
+      ];
+
+      const replySeed = {
+        self: [
+          "先把最关键的一步跑通，再做体验优化。",
+          "你现在最需要的是确定优先级，然后连续推进。"
+        ],
+        planner: [
+          "建议顺序是：关键任务、验证结果、最后复盘沉淀。",
+          "先拆成必须完成和可选优化两层，执行会更稳。"
+        ],
+        coach: [
+          "今天结束前记三件事：完成项、卡点、明天第一步。",
+          "每轮任务结束后做 5 分钟复盘，会明显提效。"
+        ],
+        creator: [
+          "先说结论再补两条依据，表达会更有说服力。",
+          "你可以先口述结构，再补充细节内容。"
+        ]
+      };
 
       function formatDuration(totalSec) {
         const m = String(Math.floor(totalSec / 60)).padStart(2, "0");
@@ -1551,57 +1717,181 @@
         return `${m}:${s}`;
       }
 
-      function clearCallPhaseTimers() {
-        while (callPhaseTimers.length) {
-          clearTimeout(callPhaseTimers.pop());
+      function generateReply(userText, contact) {
+        const clean = (userText || "").trim();
+        const persona = state.model.personaSummary || "以目标为导向，先关键后优化。";
+        const voice = state.model.voiceSummary || "语气平稳，结构清晰。";
+        const list = replySeed[contact.id] || replySeed.self;
+
+        if (!clean) {
+          return `${list[0]} ${persona}`;
+        }
+        if (clean.includes("优先") || clean.includes("先做")) {
+          return `${list[0]} 当前建议：先聚焦单点突破，再逐步扩展。`;
+        }
+        if (clean.includes("复盘") || clean.includes("总结")) {
+          return `${list[1]} 你的人格偏好是“行动后快速复盘”。`;
+        }
+        if (clean.includes("表达") || clean.includes("口播")) {
+          return `给你一个表达模板：一句结论 + 两条理由 + 一步行动。${voice}`;
+        }
+
+        return `${list[Math.floor(Math.random() * list.length)]} ${persona}`;
+      }
+
+      function clearCallTimers() {
+        clearInterval(callWaveTimer);
+        clearInterval(callDurationTimer);
+        clearInterval(callFallbackTimer);
+        clearTimeout(callSilenceTimer);
+        callWaveTimer = null;
+        callDurationTimer = null;
+        callFallbackTimer = null;
+        callSilenceTimer = null;
+      }
+
+      function stopCallRecognition() {
+        callRecognitionEnabled = false;
+        if (callRecognizer) {
+          try {
+            callRecognizer.onend = null;
+            callRecognizer.stop();
+          } catch {}
+          callRecognizer = null;
         }
       }
 
-      function queueCallPhase(fn, delayMs) {
-        const id = setTimeout(() => {
-          const idx = callPhaseTimers.indexOf(id);
-          if (idx >= 0) callPhaseTimers.splice(idx, 1);
-          if (callActive) fn();
-        }, delayMs);
-        callPhaseTimers.push(id);
+      function scheduleSilencePing() {
+        clearTimeout(callSilenceTimer);
+        callSilenceTimer = setTimeout(() => {
+          if (!callActive || speakingNow || !activeContact) return;
+          const reminder = "我在听，你可以继续说。";
+          callCaption.textContent = `实时转写: ${reminder}`;
+          speakText(reminder, {
+            rate: 1,
+            onstart: () => {
+              speakingNow = true;
+              setAvatarState(callAvatar, callAvatarMeta, "speaking", `${activeContact.name} 在回应`);
+              callStateEl.textContent = "对方正在说话";
+            },
+            onend: () => {
+              speakingNow = false;
+              setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
+              callStateEl.textContent = "正在聆听你说话";
+            }
+          });
+        }, 9000);
       }
 
-      function callPhaseListening() {
+      function respondToUser(userText) {
         if (!callActive || !activeContact) return;
-        setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
-        callStateEl.textContent = "正在聆听你说话";
-        callCaption.textContent = callCaptions[callCaptionIdx % callCaptions.length];
-        callCaptionIdx += 1;
-        queueCallPhase(callPhaseThinking, 2800);
+        const response = generateReply(userText, activeContact);
+        callCaption.textContent = `实时转写: ${response}`;
+
+        speakText(response, {
+          rate: 1,
+          onstart: () => {
+            speakingNow = true;
+            setAvatarState(callAvatar, callAvatarMeta, "speaking", `${activeContact.name} 在回答`);
+            callStateEl.textContent = "对方正在说话";
+          },
+          onend: () => {
+            speakingNow = false;
+            setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
+            callStateEl.textContent = "正在聆听你说话";
+            scheduleSilencePing();
+          }
+        });
       }
 
-      function callPhaseThinking() {
-        if (!callActive || !activeContact) return;
-        setAvatarState(callAvatar, callAvatarMeta, "thinking", `${activeContact.name} 思考中`);
-        callStateEl.textContent = "正在组织回答";
-        callCaption.textContent = "实时转写: 对方正在组织回答...";
-        queueCallPhase(callPhaseSpeaking, 1100);
+      function startCallFallback() {
+        let idx = 0;
+        clearInterval(callFallbackTimer);
+        callFallbackTimer = setInterval(() => {
+          if (!callActive || speakingNow) return;
+          const prompt = fallbackUserPrompts[idx % fallbackUserPrompts.length];
+          idx += 1;
+          callCaption.textContent = `实时转写: ${prompt}`;
+          respondToUser(prompt);
+        }, 12000);
       }
 
-      function callPhaseSpeaking() {
-        if (!callActive || !activeContact) return;
-        const replies = replyMap[activeContact.id] || replyMap.self;
-        const reply = replies[callSpeechIndex % replies.length];
-        callSpeechIndex += 1;
-        setAvatarState(callAvatar, callAvatarMeta, "speaking", `${activeContact.name} 在回答`);
-        callStateEl.textContent = "对方正在说话";
-        callCaption.textContent = `实时转写: ${reply}`;
-        queueCallPhase(callPhaseListening, 2600);
+      function startCallRecognition() {
+        if (!SpeechRecognitionClass || !callActive) {
+          startCallFallback();
+          return;
+        }
+
+        stopCallRecognition();
+        callRecognitionEnabled = true;
+
+        const recognition = createRecognizer();
+        if (!recognition) {
+          startCallFallback();
+          return;
+        }
+
+        callRecognizer = recognition;
+
+        recognition.onresult = (event) => {
+          let interim = "";
+          let finalText = "";
+
+          for (let i = event.resultIndex; i < event.results.length; i += 1) {
+            const piece = event.results[i][0].transcript.trim();
+            if (!piece) continue;
+            if (event.results[i].isFinal) {
+              finalText += `${piece} `;
+            } else {
+              interim += `${piece} `;
+            }
+          }
+
+          const preview = (finalText || interim).trim();
+          if (preview) {
+            callCaption.textContent = `实时转写: ${preview}`;
+            callStateEl.textContent = "正在聆听你说话";
+            setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
+            scheduleSilencePing();
+          }
+
+          if (finalText.trim()) {
+            setTimeout(() => respondToUser(finalText.trim()), 550);
+          }
+        };
+
+        recognition.onerror = () => {
+          if (!callActive) return;
+          callStateEl.textContent = "语音识别波动，自动重连中";
+        };
+
+        recognition.onend = () => {
+          if (callRecognitionEnabled && callActive) {
+            try {
+              recognition.start();
+            } catch {
+              startCallFallback();
+            }
+          }
+        };
+
+        try {
+          recognition.start();
+        } catch {
+          startCallFallback();
+        }
       }
 
       function startCallSession() {
-        if (callActive || !activeContact) return;
+        if (!activeContact || callActive) return;
         callActive = true;
         ensureMic();
+
         callDurationSec = 0;
         callTimerEl.textContent = "00:00";
         callStateEl.textContent = "语音通话已接通";
         statusText.textContent = `与 ${activeContact.name} 通话中 · 00:00`;
+
         callWaveTimer = setInterval(() => animateWave(callWaveBars), 220);
         callDurationTimer = setInterval(() => {
           callDurationSec += 1;
@@ -1609,23 +1899,40 @@
           callTimerEl.textContent = t;
           statusText.textContent = `与 ${activeContact.name} 通话中 · ${t}`;
         }, 1000);
-        callPhaseListening();
+
+        setAvatarState(callAvatar, callAvatarMeta, "speaking", `${activeContact.name} 已接通`);
+        speakText("我在，告诉我你现在最想推进的事情。", {
+          rate: 1,
+          onstart: () => {
+            speakingNow = true;
+            callStateEl.textContent = "对方正在说话";
+          },
+          onend: () => {
+            speakingNow = false;
+            setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
+            callStateEl.textContent = "正在聆听你说话";
+            startCallRecognition();
+            scheduleSilencePing();
+          }
+        });
       }
 
-      function stopCallListening() {
+      function stopCallSession() {
         if (!callActive) {
-          clearCallPhaseTimers();
+          clearCallTimers();
+          stopCallRecognition();
           setWaveIdle(callWaveBars);
           return;
         }
+
         callActive = false;
-        clearInterval(callWaveTimer);
-        clearInterval(callDurationTimer);
-        callWaveTimer = null;
-        callDurationTimer = null;
-        clearCallPhaseTimers();
+        speakingNow = false;
+        clearCallTimers();
+        stopCallRecognition();
+        window.speechSynthesis?.cancel();
         setWaveIdle(callWaveBars);
         callStateEl.textContent = "通话已结束";
+
         if (activeContact) {
           setAvatarState(callAvatar, callAvatarMeta, "idle", `${activeContact.name} 已离线`);
         } else {
@@ -1634,24 +1941,22 @@
       }
 
       function openCall(contactId) {
-        stopCallListening();
-        const contact = contacts.find((item) => item.id === contactId);
-        if (!contact) return;
-        activeContact = contact;
-        callSpeechIndex = 0;
-        callCaptionIdx = 0;
+        const target = getAllContacts().find((item) => item.id === contactId);
+        if (!target) return;
+
+        activeContact = target;
         showScreen("call");
-        callTitle.textContent = `与 ${contact.name} 通话中`;
+        callTitle.textContent = `与 ${target.name} 通话中`;
         callSub.textContent = "语音实时接通";
         callTimerEl.textContent = "00:00";
         callStateEl.textContent = "语音通话已接通";
         callCaption.textContent = "实时转写: 通话已接通...";
-        setAvatarState(callAvatar, callAvatarMeta, "speaking", `${contact.name} 已接通`);
-        setTimeout(startCallSession, 450);
+
+        setTimeout(startCallSession, 360);
       }
 
       hangupBtn.addEventListener("click", () => {
-        stopCallListening();
+        stopCallSession();
         activeContact = null;
         openHome();
       });
@@ -1664,11 +1969,22 @@
         openCall(id);
       });
 
-      renderContacts();
-      renderSetupQuestion();
-      setWaveIdle(callWaveBars);
-      setAvatarState(setupAvatar, null, "listening");
-      setAvatarState(callAvatar, callAvatarMeta, "idle", "待机中");
+      function bootstrap() {
+        applySelfProfile();
+        renderContacts();
+        setWaveIdle(callWaveBars);
+
+        if (state.onboardingDone) {
+          openHome();
+          return;
+        }
+
+        showScreen("setup");
+        renderSetupQuestion({ speak: speechReady });
+        setAvatarState(setupAvatar, null, "listening");
+      }
+
+      bootstrap();
     </script>
   </body>
 </html>

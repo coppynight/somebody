@@ -1,25 +1,33 @@
 # Voice Twin Prototype
 
-移动端 H5 语音数字人原型。
+移动端 H5 语音数字人项目（可运行版本）。
 
-## 项目内容
-- 一次性创建流程：创建助理通话采集 -> 建模仪式 -> 通讯录首页
-- 日常使用流程：通讯录发起语音电话 -> 电话式通话界面
-- 扩展入口：添加数字人、设置（查询/更新/分享）
+## 已实现能力
+- 一次性创建流程：创建助理通话采集 -> 建模仪式 -> 通讯录首页。
+- 电话式通话页：头像、通话计时、状态、实时转写、挂断。
+- 浏览器语音能力接入：
+  - 采访阶段自动语音提问（SpeechSynthesis）+ 自动语音采集（SpeechRecognition）。
+  - 通话阶段实时语音识别与语音回复（能力可用时自动启用）。
+  - 不支持语音 API 的浏览器会自动降级为模拟通话循环。
+- 本地持久化：
+  - 创建进度、采访答案、建模摘要。
+  - 通讯录、个人设置、分享码。
 
 ## 文件结构
-- `prototype.html`：主原型开发文件
-- `pageone/index.html`：部署到 CloudBase Hosting 的页面入口
+- `prototype.html`：主开发文件（单文件项目）
+- `pageone/index.html`：部署入口（与 `prototype.html` 同步）
 - `PRODUCT_PLAN.md`：产品方案
 - `docs/PRD.md`：产品需求文档
 
-## 本地预览
+## 本地运行
 直接用浏览器打开：
 - `prototype.html`
 
+建议用 HTTPS 或 localhost 打开以获得更稳定的语音能力权限行为。
+
 ## 在线地址
-- `https://danmu-9grk7w6g3b4184bc-1340209582.tcloudbaseapp.com/pageone/`
+- https://danmu-9grk7w6g3b4184bc-1340209582.tcloudbaseapp.com/pageone/
 
 ## 说明
-- 当前版本为交互原型，通话与建模状态为前端模拟。
-- TELOS 十文件用于内部建模，不在前台展示。
+- TELOS 十文件仅用于内部人格建模，不在前台暴露。
+- 当前仍是前端单体版本，后续可接入真实 STT/LLM/TTS 服务链路。

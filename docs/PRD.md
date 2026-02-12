@@ -79,11 +79,22 @@
 - 前台仅展示“人格建模/语音建模完成”的摘要状态。
 - 不直接向用户暴露十文件明细。
 
-## 9. 原型与交付物
-- 主原型文件：`/Users/kaixiao/aiproject/somebody/prototype.html`
-- 部署版本：`/Users/kaixiao/aiproject/somebody/pageone/index.html`
-- 在线地址：`https://danmu-9grk7w6g3b4184bc-1340209582.tcloudbaseapp.com/pageone/`
+## 9. 开发完成状态（2026-02-12）
+- 已完成移动端 H5 单页应用开发，交付文件：
+  - `/Users/kaixiao/aiproject/somebody/prototype.html`
+  - `/Users/kaixiao/aiproject/somebody/pageone/index.html`
+- 已完成本地持久化：
+  - 创建进度、采访答案、建模摘要
+  - 通讯录、设置、分享码
+- 已接入浏览器实时语音能力（可用时）：
+  - SpeechRecognition 用于采访和通话识别
+  - SpeechSynthesis 用于助理提问和通话回复播报
+- 已完成降级策略：语音 API 不可用时自动走模拟通话逻辑。
 
 ## 10. 当前已知风险
-- 尚未接入真实 STT/TTS 与声纹模型，当前为交互演示。
-- 通话状态机为前端模拟，需在工程化阶段替换为实时链路。
+- 浏览器语音 API 兼容性不一致（不同系统/浏览器存在差异）。
+- 前端单体实现，尚未接入服务端 STT/LLM/TTS 链路。
+- 语音克隆为产品规划项，当前版本仍为通用 TTS 语音。
+
+## 11. 在线地址
+- https://danmu-9grk7w6g3b4184bc-1340209582.tcloudbaseapp.com/pageone/
