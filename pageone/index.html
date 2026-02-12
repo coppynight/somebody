@@ -1,0 +1,1674 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Voice Twin Call Flow Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;family=Orbitron:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg0: #04070f;
+        --bg1: #0a1121;
+        --bg2: #101b32;
+        --line: rgba(126, 167, 231, 0.28);
+        --text: #e9f1ff;
+        --muted: #87a1cc;
+        --cyan: #42e8ff;
+        --blue: #5077ff;
+        --violet: #8a75ff;
+        --amber: #e6bb62;
+        --orange: #f5cd7f;
+        --danger: #ca5c73;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        font-family: "Noto Sans SC", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 10% 4%, rgba(66, 232, 255, 0.2), transparent 30%),
+          radial-gradient(circle at 90% 8%, rgba(138, 117, 255, 0.18), transparent 34%),
+          radial-gradient(circle at 50% 96%, rgba(80, 119, 255, 0.16), transparent 36%),
+          linear-gradient(155deg, var(--bg0), var(--bg1) 52%, var(--bg2));
+        position: relative;
+        overflow: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(76, 107, 163, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(76, 107, 163, 0.06) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: radial-gradient(circle at center, black 20%, transparent 80%);
+      }
+
+      .phone-shell {
+        width: min(430px, 100%);
+        border-radius: 36px;
+        border: 1px solid rgba(147, 191, 255, 0.3);
+        padding: 8px;
+        background:
+          linear-gradient(170deg, rgba(16, 26, 47, 0.86), rgba(8, 12, 24, 0.98)),
+          radial-gradient(circle at 12% 0%, rgba(66, 232, 255, 0.16), transparent 38%);
+        box-shadow:
+          0 30px 72px rgba(2, 5, 14, 0.72),
+          0 0 0 1px rgba(122, 171, 246, 0.12);
+      }
+
+      .phone {
+        height: min(860px, calc(100vh - 32px));
+        min-height: 700px;
+        border-radius: 28px;
+        border: 1px solid rgba(133, 170, 221, 0.24);
+        overflow: hidden;
+        position: relative;
+        background:
+          radial-gradient(circle at 84% -10%, rgba(66, 232, 255, 0.24), transparent 34%),
+          radial-gradient(circle at 10% 100%, rgba(138, 117, 255, 0.18), transparent 34%),
+          linear-gradient(180deg, #0d1428, #0a1020 56%, #070d19);
+      }
+
+      .notch {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 118px;
+        height: 24px;
+        border-radius: 999px;
+        background: rgba(35, 45, 57, 0.78);
+        z-index: 9;
+      }
+
+      .app {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .status {
+        padding: 42px 18px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .status strong {
+        font-family: "Orbitron", "Noto Sans SC", sans-serif;
+        letter-spacing: 0.12em;
+        color: #e5f3ff;
+      }
+
+      .screen-wrap {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .screen {
+        position: absolute;
+        inset: 0;
+        padding: 10px 14px 16px;
+        overflow-y: auto;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px) scale(0.987);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .screen.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+
+      .hero {
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        padding: 14px;
+        background:
+          linear-gradient(180deg, rgba(20, 33, 59, 0.86), rgba(12, 21, 40, 0.9)),
+          radial-gradient(circle at 90% 0%, rgba(66, 232, 255, 0.14), transparent 42%);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--amber));
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-family: "Orbitron", "Noto Sans SC", sans-serif;
+        font-size: 1.03rem;
+        letter-spacing: 0.04em;
+        font-weight: 600;
+      }
+
+      .hero p {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .hero-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      .icon-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        border: 1px solid rgba(131, 168, 224, 0.36);
+        background:
+          linear-gradient(145deg, rgba(32, 47, 78, 0.88), rgba(19, 31, 54, 0.88)),
+          radial-gradient(circle at 20% 10%, rgba(66, 232, 255, 0.16), transparent 46%);
+        color: #d9ecff;
+        font: inherit;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        box-shadow: inset 0 0 14px rgba(66, 232, 255, 0.05);
+      }
+
+      .card {
+        margin-top: 10px;
+        border-radius: 16px;
+        border: 1px solid rgba(126, 163, 219, 0.25);
+        background:
+          linear-gradient(180deg, rgba(19, 30, 52, 0.82), rgba(12, 20, 37, 0.9)),
+          radial-gradient(circle at 94% 0%, rgba(80, 119, 255, 0.14), transparent 40%);
+        padding: 10px;
+        box-shadow:
+          0 12px 28px rgba(6, 10, 20, 0.45),
+          inset 0 0 0 1px rgba(159, 196, 255, 0.04);
+      }
+
+      .question-label {
+        margin: 0;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .question-text {
+        margin: 6px 0 0;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .progress-compact {
+        margin-top: 8px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .meter {
+        border: 1px solid rgba(126, 152, 197, 0.26);
+        border-radius: 12px;
+        background: rgba(16, 25, 45, 0.78);
+        padding: 7px;
+      }
+
+      .meter-head {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+      }
+
+      .meter-head span {
+        color: var(--muted);
+      }
+
+      .track {
+        margin-top: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(125, 151, 199, 0.2);
+        overflow: hidden;
+      }
+
+      .fill {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--cyan), var(--blue));
+        transition: width 0.35s ease;
+      }
+
+      .fill.voice {
+        background: linear-gradient(90deg, #88d4ff, var(--violet));
+      }
+
+      .round-note {
+        margin: 8px 0 0;
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .setup-screen {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 100%;
+      }
+
+      .setup-avatar-wrap {
+        margin-top: 4px;
+      }
+
+      .setup-question-card {
+        min-height: 220px;
+        margin-top: 0;
+        padding: 14px;
+      }
+
+      .setup-question-card .question-text {
+        margin: 0;
+        min-height: 128px;
+        display: grid;
+        align-content: center;
+        font-size: 1.04rem;
+        line-height: 1.6;
+      }
+
+      .setup-progress {
+        margin-top: 10px;
+        display: grid;
+        gap: 7px;
+      }
+
+      .setup-progress span {
+        font-family: "Orbitron", "Noto Sans SC", sans-serif;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: #b6cdf5;
+      }
+
+      .setup-progress .track {
+        margin-top: 0;
+        height: 4px;
+      }
+
+      .setup-nav {
+        position: sticky;
+        bottom: 0;
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 10px 0 2px;
+        background: linear-gradient(180deg, transparent, rgba(8, 14, 27, 0.86) 42%);
+      }
+
+      .avatar-wrap {
+        margin-top: 10px;
+        display: grid;
+        justify-items: center;
+        gap: 7px;
+      }
+
+      .avatar-stage {
+        width: 160px;
+        height: 160px;
+        position: relative;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 45%, rgba(38, 54, 89, 0.72) 0, rgba(23, 34, 58, 0.62) 70%, transparent 72%);
+        border-radius: 50%;
+      }
+
+      .avatar-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 2px solid rgba(96, 136, 204, 0.36);
+        animation: spin 14s linear infinite;
+      }
+
+      .avatar-ring.r1 {
+        width: 148px;
+        height: 148px;
+      }
+
+      .avatar-ring.r2 {
+        width: 118px;
+        height: 118px;
+        border-style: dotted;
+        border-color: rgba(141, 109, 255, 0.42);
+        animation: spinBack 12s linear infinite;
+      }
+
+      .avatar-accent {
+        position: absolute;
+        top: 18px;
+        width: 118px;
+        height: 56px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(53, 201, 255, 0.2), transparent);
+      }
+
+      .avatar-body {
+        position: absolute;
+        bottom: 20px;
+        width: 86px;
+        height: 56px;
+        border-radius: 26px 26px 18px 18px;
+        background: linear-gradient(180deg, #3d5f91, #2a3f63);
+        box-shadow: inset 0 -8px 12px rgba(9, 15, 29, 0.55);
+      }
+
+      .avatar-core {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 32% 30%, rgba(255, 238, 224, 0.96), rgba(241, 196, 162, 0.94));
+        box-shadow:
+          0 5px 12px rgba(11, 20, 38, 0.38),
+          inset 0 -6px 10px rgba(189, 130, 97, 0.25);
+        display: grid;
+        place-items: center;
+        animation: avatarFloat 3.1s ease-in-out infinite;
+        overflow: hidden;
+      }
+
+      .avatar-core::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: 8px;
+        width: 58px;
+        height: 34px;
+        border-radius: 20px 20px 16px 16px;
+        background: #835e4d;
+      }
+
+      .avatar-core::after {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: -6px;
+        width: 20px;
+        height: 22px;
+        border-radius: 50%;
+        background: #8e6654;
+      }
+
+      .avatar-face {
+        position: relative;
+        z-index: 1;
+        width: 56px;
+        height: 42px;
+        display: grid;
+        grid-template-areas:
+          "left right"
+          "mouth mouth";
+        align-items: center;
+        justify-items: center;
+      }
+
+      .eye {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #443427;
+        animation: blink 5.1s infinite;
+      }
+
+      .eye.left {
+        grid-area: left;
+      }
+
+      .eye.right {
+        grid-area: right;
+      }
+
+      .mouth {
+        grid-area: mouth;
+        width: 20px;
+        height: 5px;
+        border-radius: 999px;
+        background: #8a5343;
+        margin-top: 6px;
+      }
+
+      .avatar-stage.idle .avatar-ring {
+        opacity: 0.78;
+      }
+
+      .avatar-stage.listening .avatar-ring.r1 {
+        border-color: rgba(53, 201, 255, 0.66);
+        box-shadow: 0 0 14px rgba(53, 201, 255, 0.24);
+      }
+
+      .avatar-stage.listening .avatar-core {
+        animation: avatarPulse 1.25s ease-in-out infinite;
+      }
+
+      .avatar-stage.thinking .avatar-ring.r2 {
+        animation-duration: 3.2s;
+      }
+
+      .avatar-stage.speaking .mouth {
+        animation: mouthTalk 0.28s ease-in-out infinite alternate;
+      }
+
+      .avatar-stage.avatar-self .avatar-body {
+        background: linear-gradient(180deg, #8a72ab, #65527e);
+        box-shadow: inset 0 -8px 12px rgba(60, 43, 83, 0.34);
+      }
+
+      .avatar-stage.avatar-self .avatar-core::before,
+      .avatar-stage.avatar-self .avatar-core::after {
+        background: #2f4058;
+      }
+
+      .avatar-stage.avatar-self .avatar-ring.r1 {
+        border-color: rgba(136, 97, 154, 0.5);
+      }
+
+      .avatar-stage.avatar-self.listening .avatar-ring.r1 {
+        border-color: rgba(136, 97, 154, 0.72);
+        box-shadow: 0 0 14px rgba(136, 97, 154, 0.2);
+      }
+
+      .avatar-meta {
+        margin: 0;
+        font-size: 11px;
+        color: #a9bddf;
+      }
+
+      .log-list {
+        display: grid;
+        gap: 8px;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+
+      .bubble {
+        font-size: 13px;
+        line-height: 1.5;
+        padding: 8px 10px;
+        border-radius: 12px;
+      }
+
+      .bubble.assistant {
+        margin-right: 15%;
+        background: rgba(33, 49, 82, 0.82);
+        border: 1px solid rgba(117, 142, 186, 0.34);
+      }
+
+      .bubble.user {
+        margin-left: 15%;
+        background: rgba(51, 39, 78, 0.8);
+        border: 1px solid rgba(141, 109, 255, 0.28);
+      }
+
+      .voice-panel {
+        margin-top: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(125, 151, 196, 0.28);
+        background: rgba(18, 28, 49, 0.84);
+        padding: 10px;
+        box-shadow: 0 8px 20px rgba(7, 12, 22, 0.32);
+      }
+
+      .live-caption {
+        margin: 0;
+        font-size: 12px;
+        color: #a8bcde;
+      }
+
+      .wave {
+        margin-top: 8px;
+        height: 42px;
+        border-radius: 10px;
+        border: 1px solid rgba(122, 147, 191, 0.3);
+        display: grid;
+        grid-template-columns: repeat(20, minmax(0, 1fr));
+        gap: 3px;
+        align-items: end;
+        padding: 6px;
+        background:
+          linear-gradient(180deg, rgba(20, 32, 54, 0.82), rgba(15, 24, 43, 0.92)),
+          repeating-linear-gradient(
+            90deg,
+            rgba(124, 155, 205, 0.12) 0 1px,
+            transparent 1px 7px
+          );
+      }
+
+      .wave i {
+        height: 16%;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #5fd6ff, #6b84ff);
+        transition: height 0.2s ease;
+      }
+
+      .call-btn {
+        margin-top: 9px;
+        width: 100%;
+        border: 0;
+        border-radius: 13px;
+        padding: 12px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        color: #f4f8ff;
+        background: linear-gradient(120deg, var(--cyan), var(--blue));
+      }
+
+      .call-btn.listening {
+        color: #614010;
+        background: linear-gradient(120deg, var(--amber), #efc66d);
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+
+      .danger-btn {
+        margin-top: 8px;
+        width: 100%;
+        border: 1px solid rgba(194, 92, 101, 0.56);
+        border-radius: 12px;
+        padding: 10px;
+        font: inherit;
+        color: #f8d6db;
+        background: rgba(93, 31, 40, 0.5);
+        cursor: pointer;
+      }
+
+      .call-timer {
+        margin: 8px 0 0;
+        text-align: center;
+        font-family: "Noto Sans SC", sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.02em;
+      }
+
+      .call-state {
+        margin: 4px 0 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .form-head {
+        margin: 0 0 8px;
+        font-size: 13px;
+      }
+
+      .form-label {
+        display: block;
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .text-input {
+        width: 100%;
+        margin-top: 6px;
+        border: 1px solid rgba(130, 163, 219, 0.34);
+        border-radius: 11px;
+        background: rgba(12, 21, 40, 0.82);
+        color: var(--text);
+        padding: 10px;
+        font: inherit;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+        margin-top: 8px;
+        border-radius: 11px;
+        padding: 11px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        border: 0;
+        color: #f4f8ff;
+        background: linear-gradient(120deg, var(--cyan), var(--blue) 58%, var(--violet));
+        box-shadow: 0 8px 18px rgba(58, 96, 200, 0.32);
+      }
+
+      .secondary-btn {
+        border: 1px solid rgba(125, 158, 211, 0.34);
+        color: #d3e5ff;
+        background: rgba(19, 31, 55, 0.78);
+      }
+
+      .secondary-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .form-note {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: #a3b7d8;
+      }
+
+      .model-wrap {
+        margin-top: 12px;
+        border-radius: 22px;
+        border: 1px solid rgba(133, 167, 223, 0.36);
+        min-height: 520px;
+        padding: 16px;
+        background:
+          radial-gradient(circle at center, rgba(66, 232, 255, 0.17), rgba(13, 21, 37, 0.88)),
+          linear-gradient(180deg, rgba(18, 29, 52, 0.94), rgba(10, 17, 31, 0.96));
+        box-shadow: 0 18px 40px rgba(3, 8, 20, 0.5);
+      }
+
+      .orb-zone {
+        height: 250px;
+        display: grid;
+        place-items: center;
+        position: relative;
+      }
+
+      .ring,
+      .ring::before,
+      .ring::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+      }
+
+      .ring {
+        width: 172px;
+        height: 172px;
+        border: 2px solid rgba(66, 232, 255, 0.55);
+        animation: spin 8s linear infinite;
+      }
+
+      .ring::before {
+        inset: 16px;
+        border: 2px dashed rgba(138, 117, 255, 0.58);
+        animation: spinBack 6s linear infinite;
+      }
+
+      .ring::after {
+        inset: 40px;
+        border: 2px solid rgba(94, 255, 189, 0.56);
+        animation: spin 4.9s linear infinite;
+      }
+
+      .core {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #f4fbff 0%, #9be6ff 44%, #5aa8ff 100%);
+        box-shadow:
+          0 0 20px rgba(66, 232, 255, 0.5),
+          0 0 34px rgba(138, 117, 255, 0.3);
+        animation: corePulse 1.6s ease-in-out infinite;
+      }
+
+      .model-title {
+        text-align: center;
+        font-family: "Orbitron", "Noto Sans SC", sans-serif;
+        font-size: 1rem;
+        letter-spacing: 0.04em;
+      }
+
+      .model-sub {
+        margin-top: 6px;
+        text-align: center;
+        color: #9ab3d8;
+        font-size: 12px;
+      }
+
+      .model-label {
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+      }
+
+      .model-log {
+        margin: 10px 0 0;
+        padding: 0;
+        display: grid;
+        gap: 6px;
+      }
+
+      .model-log li {
+        list-style: none;
+        font-size: 12px;
+        color: #b8cdf0;
+        border-radius: 10px;
+        border: 1px solid rgba(136, 172, 229, 0.28);
+        background: rgba(21, 33, 58, 0.84);
+        padding: 8px;
+      }
+
+      .model-log li.done {
+        border-color: rgba(94, 255, 189, 0.42);
+        color: #97ffd3;
+      }
+
+      .contacts-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .tag {
+        border-radius: 999px;
+        border: 1px solid rgba(132, 168, 223, 0.38);
+        background: rgba(20, 33, 58, 0.84);
+        padding: 4px 8px;
+      }
+
+      .contact-item {
+        margin-top: 8px;
+        border: 1px solid rgba(128, 163, 216, 0.25);
+        border-radius: 14px;
+        background:
+          linear-gradient(180deg, rgba(21, 33, 57, 0.82), rgba(13, 22, 39, 0.88)),
+          radial-gradient(circle at 100% 0%, rgba(80, 119, 255, 0.12), transparent 42%);
+        padding: 9px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .contact-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .contact-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        flex: 0 0 auto;
+        background: linear-gradient(150deg, var(--contact-a, #9dcbd9), var(--contact-b, #7d95bc));
+        box-shadow: 0 4px 10px rgba(8, 14, 27, 0.42);
+      }
+
+      .contact-name {
+        margin: 0;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .contact-sub {
+        margin: 2px 0 0;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .mini-call {
+        border: 0;
+        border-radius: 10px;
+        padding: 8px 9px;
+        font-size: 12px;
+        color: #ffffff;
+        background: linear-gradient(120deg, var(--cyan), var(--blue) 58%, var(--violet));
+        cursor: pointer;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes spinBack {
+        to {
+          transform: rotate(-360deg);
+        }
+      }
+
+      @keyframes corePulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.16);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 186, 136, 0.35);
+        }
+        50% {
+          box-shadow: 0 0 0 7px rgba(255, 186, 136, 0.1);
+        }
+      }
+
+      @keyframes avatarFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
+      }
+
+      @keyframes avatarPulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      @keyframes mouthTalk {
+        0% {
+          width: 18px;
+          height: 4px;
+          border-radius: 999px;
+        }
+        100% {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+        }
+      }
+
+      @keyframes blink {
+        0%,
+        45%,
+        55%,
+        100% {
+          transform: scaleY(1);
+        }
+        50% {
+          transform: scaleY(0.1);
+        }
+      }
+
+      @keyframes sweep {
+        0% {
+          transform: translateX(-120%);
+        }
+        50% {
+          transform: translateX(120%);
+        }
+        100% {
+          transform: translateX(120%);
+        }
+      }
+
+      @media (max-width: 420px) {
+        .phone-shell {
+          border-radius: 30px;
+          padding: 6px;
+        }
+
+        .phone {
+          border-radius: 24px;
+          min-height: 680px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-shell">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="app">
+          <header class="status">
+            <strong>VOICE TWIN</strong>
+            <span id="status-text">与创建助理通话中</span>
+          </header>
+
+          <div class="screen-wrap">
+            <section class="screen active setup-screen" id="setup-screen">
+              <section class="avatar-wrap setup-avatar-wrap">
+                <div class="avatar-stage avatar-mentor listening" id="setup-avatar">
+                  <i class="avatar-ring r1"></i>
+                  <i class="avatar-ring r2"></i>
+                  <i class="avatar-accent"></i>
+                  <div class="avatar-body"></div>
+                  <div class="avatar-core">
+                    <div class="avatar-face">
+                      <i class="eye left"></i>
+                      <i class="eye right"></i>
+                      <i class="mouth"></i>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="card setup-question-card">
+                <p class="question-text" id="setup-question">你最希望这个数字人长期帮你完成什么？</p>
+                <div class="setup-progress">
+                  <span id="setup-progress-text">1 / 4</span>
+                  <div class="track"><div class="fill" id="setup-progress-fill" style="width: 25%"></div></div>
+                </div>
+              </section>
+
+              <section class="setup-nav">
+                <button class="secondary-btn" id="setup-prev-btn">上一题</button>
+                <button class="primary-btn" id="setup-next-btn">下一题</button>
+              </section>
+            </section>
+
+            <section class="screen" id="model-screen">
+              <article class="hero">
+                <h1>建模仪式</h1>
+                <p>正在把你的表达和声音融合为数字人格。</p>
+              </article>
+
+              <article class="model-wrap">
+                <div class="orb-zone">
+                  <div class="ring"></div>
+                  <div class="core"></div>
+                </div>
+                <div class="model-title" id="model-title">初始化建模引擎</div>
+                <div class="model-sub" id="model-sub">检查采访素材...</div>
+                <div class="model-label"><strong>进度</strong><span id="model-percent">0%</span></div>
+                <div class="track"><div class="fill" id="model-fill" style="width: 0%"></div></div>
+                <ul class="model-log" id="model-log"></ul>
+              </article>
+            </section>
+
+            <section class="screen" id="home-screen">
+              <article class="hero">
+                <div class="hero-top">
+                  <div>
+                    <h1>数字人通讯录</h1>
+                    <p>随时发起语音电话。</p>
+                  </div>
+                  <div class="hero-actions">
+                    <button class="icon-btn" id="add-entry-btn" title="添加数字人">+</button>
+                    <button class="icon-btn" id="settings-entry-btn" title="设置">⚙</button>
+                  </div>
+                </div>
+              </article>
+
+              <section class="card">
+                <div class="contacts-head">
+                  <span>置顶联系人</span>
+                  <span class="tag">YOU</span>
+                </div>
+                <div class="contact-item">
+                  <div class="contact-left">
+                    <div class="contact-avatar" id="self-contact-avatar"></div>
+                    <div>
+                      <p class="contact-name" id="self-contact-name">我的数字人（你）</p>
+                      <p class="contact-sub" id="self-contact-sub">语气与思路已完成建模</p>
+                    </div>
+                  </div>
+                  <button class="mini-call" data-contact-id="self">语音电话</button>
+                </div>
+              </section>
+
+              <section class="card">
+                <div class="contacts-head">
+                  <span>其他数字人</span>
+                  <span class="tag" id="contacts-count-tag">3</span>
+                </div>
+                <div id="contact-list"></div>
+              </section>
+            </section>
+
+            <section class="screen" id="call-screen">
+              <article class="hero">
+                <h1 id="call-title">与数字人通话中</h1>
+                <p id="call-sub">语音实时接通</p>
+              </article>
+
+              <section class="avatar-wrap">
+                <div class="avatar-stage avatar-self listening" id="call-avatar">
+                  <i class="avatar-ring r1"></i>
+                  <i class="avatar-ring r2"></i>
+                  <i class="avatar-accent"></i>
+                  <div class="avatar-body"></div>
+                  <div class="avatar-core">
+                    <div class="avatar-face">
+                      <i class="eye left"></i>
+                      <i class="eye right"></i>
+                      <i class="mouth"></i>
+                    </div>
+                  </div>
+                </div>
+                <p class="avatar-meta" id="call-avatar-meta">正在聆听</p>
+              </section>
+
+              <p class="call-timer" id="call-timer">00:00</p>
+              <p class="call-state" id="call-state">语音通话已接通</p>
+
+              <section class="voice-panel">
+                <p class="live-caption" id="call-caption">实时转写: 帮我把今天工作再收敛一下...</p>
+                <div class="wave" id="call-wave"></div>
+                <button class="danger-btn" id="hangup-btn">挂断电话</button>
+              </section>
+            </section>
+
+            <section class="screen" id="add-screen">
+              <article class="hero">
+                <h1>添加数字人</h1>
+                <p>通过数字 ID 添加到通讯录。</p>
+              </article>
+
+              <section class="card">
+                <label class="form-label" for="add-id-input">数字 ID</label>
+                <input class="text-input" id="add-id-input" type="text" placeholder="例如: twin_2048" />
+                <button class="primary-btn" id="add-id-confirm-btn">添加到通讯录</button>
+                <p class="form-note" id="add-id-feedback">请输入数字 ID。</p>
+                <button class="secondary-btn" id="add-id-back-btn">返回通讯录</button>
+              </section>
+            </section>
+
+            <section class="screen" id="settings-screen">
+              <article class="hero">
+                <h1>我的数字人设置</h1>
+                <p>查询、更新和分享你的数字人。</p>
+              </article>
+
+              <section class="card">
+                <div class="form-head">
+                  <strong>查询</strong>
+                </div>
+                <button class="primary-btn" id="query-profile-btn">查询当前信息</button>
+                <p class="form-note" id="query-profile-result">尚未查询。</p>
+              </section>
+
+              <section class="card">
+                <div class="form-head">
+                  <strong>更新</strong>
+                </div>
+                <label class="form-label" for="update-name-input">显示名称</label>
+                <input class="text-input" id="update-name-input" type="text" placeholder="我的数字人（你）" />
+                <label class="form-label" for="update-style-select">语音风格</label>
+                <select class="text-input" id="update-style-select">
+                  <option value="balanced">平衡</option>
+                  <option value="calm">沉稳</option>
+                  <option value="direct">干练</option>
+                </select>
+                <button class="primary-btn" id="save-profile-btn">保存更新</button>
+                <p class="form-note" id="save-profile-result">尚未更新。</p>
+              </section>
+
+              <section class="card">
+                <div class="form-head">
+                  <strong>分享</strong>
+                </div>
+                <input class="text-input" id="share-code-output" type="text" value="VT-SHARE-0000" readonly />
+                <button class="primary-btn" id="gen-share-code-btn">生成分享码</button>
+                <button class="secondary-btn" id="copy-share-code-btn">复制分享码</button>
+                <p class="form-note" id="share-result">可生成后分享。</p>
+                <button class="secondary-btn" id="settings-back-btn">返回通讯录</button>
+              </section>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const statusText = document.getElementById("status-text");
+      const screens = {
+        setup: document.getElementById("setup-screen"),
+        model: document.getElementById("model-screen"),
+        home: document.getElementById("home-screen"),
+        call: document.getElementById("call-screen"),
+        add: document.getElementById("add-screen"),
+        settings: document.getElementById("settings-screen")
+      };
+
+      function showScreen(name) {
+        Object.values(screens).forEach((screen) => screen.classList.remove("active"));
+        screens[name].classList.add("active");
+      }
+
+      function appendBubble(container, role, text) {
+        const bubble = document.createElement("div");
+        bubble.className = `bubble ${role}`;
+        bubble.textContent = text;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function buildWave(container, count) {
+        for (let i = 0; i < count; i += 1) {
+          const bar = document.createElement("i");
+          container.appendChild(bar);
+        }
+        return Array.from(container.querySelectorAll("i"));
+      }
+
+      function setWaveIdle(bars) {
+        bars.forEach((bar, idx) => {
+          bar.style.height = `${14 + (idx % 4) * 5}%`;
+        });
+      }
+
+      let micAnalyser = null;
+      let micData = null;
+      let micReady = false;
+      let micInitPromise = null;
+
+      function ensureMic() {
+        if (micReady) return Promise.resolve(true);
+        if (micInitPromise) return micInitPromise;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          return Promise.resolve(false);
+        }
+
+        micInitPromise = navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) return false;
+            const ctx = new AudioContextClass();
+            const source = ctx.createMediaStreamSource(stream);
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 128;
+            analyser.smoothingTimeConstant = 0.7;
+            source.connect(analyser);
+            micAnalyser = analyser;
+            micData = new Uint8Array(analyser.frequencyBinCount);
+            micReady = true;
+            return true;
+          })
+          .catch(() => false)
+          .then((ok) => {
+            if (!ok) micInitPromise = null;
+            return ok;
+          });
+
+        return micInitPromise;
+      }
+
+      function animateWave(bars) {
+        if (micReady && micAnalyser && micData) {
+          micAnalyser.getByteFrequencyData(micData);
+          const step = Math.max(1, Math.floor(micData.length / bars.length));
+          bars.forEach((bar, idx) => {
+            const raw = micData[Math.min(micData.length - 1, idx * step)] / 255;
+            const smooth = Math.min(1, Math.max(0.06, raw * 1.25));
+            bar.style.height = `${12 + smooth * 86}%`;
+          });
+          return;
+        }
+
+        bars.forEach((bar) => {
+          bar.style.height = `${Math.max(12, Math.floor(Math.random() * 86))}%`;
+        });
+      }
+
+      function setAvatarState(avatarEl, labelEl, mode, labelText) {
+        avatarEl.classList.remove("idle", "listening", "speaking", "thinking");
+        avatarEl.classList.add(mode);
+        if (labelText && labelEl) labelEl.textContent = labelText;
+      }
+
+      const setupQuestionEl = document.getElementById("setup-question");
+      const setupProgressText = document.getElementById("setup-progress-text");
+      const setupProgressFill = document.getElementById("setup-progress-fill");
+      const setupPrevBtn = document.getElementById("setup-prev-btn");
+      const setupNextBtn = document.getElementById("setup-next-btn");
+      const setupAvatar = document.getElementById("setup-avatar");
+
+      const setupQuestions = [
+        "你最希望这个数字人长期帮你完成什么？",
+        "当目标冲突时，你通常怎么取舍？",
+        "请讲一次你主动调整策略的经历。",
+        "请用自然语速讲 40 秒，描述你理想的一天。"
+      ];
+      let setupIndex = 0;
+
+      function renderSetupQuestion() {
+        setupQuestionEl.textContent = setupQuestions[setupIndex];
+        setupProgressText.textContent = `${setupIndex + 1} / ${setupQuestions.length}`;
+        setupProgressFill.style.width = `${((setupIndex + 1) / setupQuestions.length) * 100}%`;
+        setupPrevBtn.disabled = setupIndex === 0;
+        setupNextBtn.textContent = setupIndex === setupQuestions.length - 1 ? "开始建模" : "下一题";
+        statusText.textContent = `创建助理采集中 · ${setupIndex + 1}/${setupQuestions.length}`;
+      }
+
+      setupPrevBtn.addEventListener("click", () => {
+        if (setupIndex === 0) return;
+        setupIndex -= 1;
+        setAvatarState(setupAvatar, null, "thinking");
+        renderSetupQuestion();
+      });
+
+      setupNextBtn.addEventListener("click", () => {
+        if (setupIndex < setupQuestions.length - 1) {
+          setupIndex += 1;
+          setAvatarState(setupAvatar, null, "listening");
+          renderSetupQuestion();
+          return;
+        }
+        setAvatarState(setupAvatar, null, "speaking");
+        statusText.textContent = "采集完成 · 准备建模";
+        runModeling();
+      });
+
+      const modelTitle = document.getElementById("model-title");
+      const modelSub = document.getElementById("model-sub");
+      const modelPercent = document.getElementById("model-percent");
+      const modelFill = document.getElementById("model-fill");
+      const modelLog = document.getElementById("model-log");
+      const modelSteps = [
+        { title: "初始化建模引擎", sub: "检查采集结构...", log: "语义素材解析完成" },
+        { title: "生成人格向量", sub: "融合目标与决策特征...", log: "人格特征融合完成" },
+        { title: "训练语音模型", sub: "拟合音色与韵律...", log: "声纹建模完成" },
+        { title: "完成校准", sub: "输出可通话数字人...", log: "数字人可用" }
+      ];
+
+      function runModeling() {
+        showScreen("model");
+        statusText.textContent = "建模仪式进行中";
+        modelLog.innerHTML = "";
+        modelFill.style.width = "0%";
+        modelPercent.textContent = "0%";
+
+        let idx = 0;
+        function next() {
+          if (idx >= modelSteps.length) {
+            modelTitle.textContent = "建模完成";
+            modelSub.textContent = "正在打开数字人通讯录...";
+            modelFill.style.width = "100%";
+            modelPercent.textContent = "100%";
+            statusText.textContent = "建模完成 · 打开通讯录";
+            setTimeout(openHome, 900);
+            return;
+          }
+
+          const step = modelSteps[idx];
+          const value = Math.round(((idx + 1) / modelSteps.length) * 100);
+          modelTitle.textContent = step.title;
+          modelSub.textContent = step.sub;
+          modelFill.style.width = `${value}%`;
+          modelPercent.textContent = `${value}%`;
+          const item = document.createElement("li");
+          item.textContent = step.log;
+          modelLog.appendChild(item);
+          setTimeout(() => item.classList.add("done"), 260);
+          idx += 1;
+          setTimeout(next, 1250);
+        }
+
+        setTimeout(next, 420);
+      }
+
+      const selfProfile = {
+        id: "self",
+        digitalId: "twin_self_001",
+        name: "我的数字人（你）",
+        style: "balanced",
+        shareCode: "VT-SHARE-0000",
+        group: "analysts"
+      };
+      const groupPalette = {
+        analysts: { a: "#88619a", b: "#b095bd" },
+        diplomats: { a: "#33a474", b: "#73c3a0" },
+        sentinels: { a: "#4298b4", b: "#82c2d5" },
+        explorers: { a: "#e4ae3a", b: "#f0d287" }
+      };
+      const contacts = [
+        { id: "self", name: selfProfile.name, sub: "语气与思路已完成建模", group: "analysts" },
+        { id: "planner", name: "执行规划师", sub: "目标拆解与优先级建议", group: "sentinels" },
+        { id: "coach", name: "复盘教练", sub: "每日回顾与改进建议", group: "diplomats" },
+        { id: "creator", name: "内容共创体", sub: "口播与表达优化建议", group: "explorers" }
+      ];
+
+      const contactList = document.getElementById("contact-list");
+      const contactsCountTag = document.getElementById("contacts-count-tag");
+      const addEntryBtn = document.getElementById("add-entry-btn");
+      const settingsEntryBtn = document.getElementById("settings-entry-btn");
+
+      function renderContacts() {
+        contactList.innerHTML = "";
+        const others = contacts.filter((item) => item.id !== "self");
+        contactsCountTag.textContent = String(others.length);
+
+        others.forEach((contact) => {
+          const palette = groupPalette[contact.group] || groupPalette.sentinels;
+          const row = document.createElement("div");
+          row.className = "contact-item";
+          row.innerHTML = `
+            <div class="contact-left">
+              <div class="contact-avatar" style="--contact-a:${palette.a}; --contact-b:${palette.b};"></div>
+              <div>
+                <p class="contact-name">${contact.name}</p>
+                <p class="contact-sub">${contact.sub}</p>
+              </div>
+            </div>
+            <button class="mini-call" data-contact-id="${contact.id}">语音电话</button>
+          `;
+          contactList.appendChild(row);
+        });
+      }
+
+      function openHome() {
+        stopCallListening();
+        showScreen("home");
+        statusText.textContent = "通讯录首页 · 可随时发起语音电话";
+      }
+
+      addEntryBtn.addEventListener("click", () => {
+        showScreen("add");
+        statusText.textContent = "添加数字人";
+      });
+
+      settingsEntryBtn.addEventListener("click", () => {
+        document.getElementById("update-name-input").value = selfProfile.name;
+        document.getElementById("update-style-select").value = selfProfile.style;
+        document.getElementById("share-code-output").value = selfProfile.shareCode;
+        showScreen("settings");
+        statusText.textContent = "我的数字人设置";
+      });
+
+      const selfContactNameEl = document.getElementById("self-contact-name");
+      const selfContactSubEl = document.getElementById("self-contact-sub");
+      const selfContactAvatarEl = document.getElementById("self-contact-avatar");
+      const selfPalette = groupPalette[selfProfile.group] || groupPalette.analysts;
+      selfContactAvatarEl.style.setProperty("--contact-a", selfPalette.a);
+      selfContactAvatarEl.style.setProperty("--contact-b", selfPalette.b);
+
+      const addIdInput = document.getElementById("add-id-input");
+      const addIdConfirmBtn = document.getElementById("add-id-confirm-btn");
+      const addIdBackBtn = document.getElementById("add-id-back-btn");
+      const addIdFeedback = document.getElementById("add-id-feedback");
+
+      addIdConfirmBtn.addEventListener("click", () => {
+        const rawId = addIdInput.value.trim();
+        if (!rawId) {
+          addIdFeedback.textContent = "请输入有效的数字 ID。";
+          return;
+        }
+        const normalizedId = rawId.toLowerCase();
+        const exists = contacts.some((item) => item.id === normalizedId);
+        if (exists) {
+          addIdFeedback.textContent = "该数字 ID 已存在于通讯录。";
+          return;
+        }
+        const groups = ["analysts", "diplomats", "sentinels", "explorers"];
+        const codeSum = [...normalizedId].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+        const group = groups[codeSum % groups.length];
+        contacts.push({
+          id: normalizedId,
+          name: `数字人 ${rawId}`,
+          sub: `来自 ID: ${rawId}`,
+          group
+        });
+        renderContacts();
+        addIdFeedback.textContent = `已添加数字人: ${rawId}`;
+        addIdInput.value = "";
+      });
+
+      addIdBackBtn.addEventListener("click", openHome);
+
+      const queryProfileBtn = document.getElementById("query-profile-btn");
+      const queryProfileResult = document.getElementById("query-profile-result");
+      const updateNameInput = document.getElementById("update-name-input");
+      const updateStyleSelect = document.getElementById("update-style-select");
+      const saveProfileBtn = document.getElementById("save-profile-btn");
+      const saveProfileResult = document.getElementById("save-profile-result");
+      const shareCodeOutput = document.getElementById("share-code-output");
+      const genShareCodeBtn = document.getElementById("gen-share-code-btn");
+      const copyShareCodeBtn = document.getElementById("copy-share-code-btn");
+      const shareResult = document.getElementById("share-result");
+      const settingsBackBtn = document.getElementById("settings-back-btn");
+
+      queryProfileBtn.addEventListener("click", () => {
+        queryProfileResult.textContent =
+          `ID: ${selfProfile.digitalId} · 名称: ${selfProfile.name} · 风格: ${selfProfile.style}`;
+      });
+
+      saveProfileBtn.addEventListener("click", () => {
+        const nextName = updateNameInput.value.trim();
+        const nextStyle = updateStyleSelect.value;
+        if (!nextName) {
+          saveProfileResult.textContent = "显示名称不能为空。";
+          return;
+        }
+        selfProfile.name = nextName;
+        selfProfile.style = nextStyle;
+        const selfContact = contacts.find((item) => item.id === "self");
+        if (selfContact) {
+          selfContact.name = nextName;
+          selfContact.sub = `风格: ${nextStyle}`;
+        }
+        selfContactNameEl.textContent = nextName;
+        selfContactSubEl.textContent = `风格: ${nextStyle}`;
+        saveProfileResult.textContent = "已更新你的数字人信息。";
+      });
+
+      genShareCodeBtn.addEventListener("click", () => {
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        selfProfile.shareCode = `VT-SHARE-${rand}`;
+        shareCodeOutput.value = selfProfile.shareCode;
+        shareResult.textContent = "已生成新的分享码。";
+      });
+
+      copyShareCodeBtn.addEventListener("click", async () => {
+        const value = shareCodeOutput.value;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(value);
+            shareResult.textContent = "分享码已复制。";
+            return;
+          }
+        } catch {}
+        shareResult.textContent = `请手动复制: ${value}`;
+      });
+
+      settingsBackBtn.addEventListener("click", openHome);
+
+      const callTitle = document.getElementById("call-title");
+      const callSub = document.getElementById("call-sub");
+      const callAvatar = document.getElementById("call-avatar");
+      const callAvatarMeta = document.getElementById("call-avatar-meta");
+      const callCaption = document.getElementById("call-caption");
+      const callTimerEl = document.getElementById("call-timer");
+      const callStateEl = document.getElementById("call-state");
+      const hangupBtn = document.getElementById("hangup-btn");
+      const callWaveBars = buildWave(document.getElementById("call-wave"), 20);
+
+      const callCaptions = [
+        "实时转写: 帮我把今天工作再收敛一点...",
+        "实时转写: 我想先做最关键那件事...",
+        "实时转写: 给我一个马上可执行的顺序..."
+      ];
+      const replyMap = {
+        self: [
+          "先做三步: 跑通主流程、验证通话体验、记录复盘结论。",
+          "你现在最该做的是先交付可演示版本，再优化细节。"
+        ],
+        planner: [
+          "建议顺序: 关键任务 60 分钟、验证 30 分钟、复盘 20 分钟。",
+          "先把目标拆成必须完成和可选优化两层。"
+        ],
+        coach: [
+          "今天结束前记录三件事: 做了什么、学到什么、下一步是什么。",
+          "你的节奏不错，建议每轮结束后加 5 分钟复盘。"
+        ],
+        creator: [
+          "先输出一句核心结论，再给两条支撑点，表达会更稳。",
+          "你可以先口述结构，再补细节，效率会更高。"
+        ]
+      };
+
+      let activeContact = null;
+      let callActive = false;
+      let callWaveTimer = null;
+      let callDurationTimer = null;
+      let callCaptionIdx = 0;
+      let callDurationSec = 0;
+      let callSpeechIndex = 0;
+      const callPhaseTimers = [];
+
+      function formatDuration(totalSec) {
+        const m = String(Math.floor(totalSec / 60)).padStart(2, "0");
+        const s = String(totalSec % 60).padStart(2, "0");
+        return `${m}:${s}`;
+      }
+
+      function clearCallPhaseTimers() {
+        while (callPhaseTimers.length) {
+          clearTimeout(callPhaseTimers.pop());
+        }
+      }
+
+      function queueCallPhase(fn, delayMs) {
+        const id = setTimeout(() => {
+          const idx = callPhaseTimers.indexOf(id);
+          if (idx >= 0) callPhaseTimers.splice(idx, 1);
+          if (callActive) fn();
+        }, delayMs);
+        callPhaseTimers.push(id);
+      }
+
+      function callPhaseListening() {
+        if (!callActive || !activeContact) return;
+        setAvatarState(callAvatar, callAvatarMeta, "listening", `${activeContact.name} 正在聆听`);
+        callStateEl.textContent = "正在聆听你说话";
+        callCaption.textContent = callCaptions[callCaptionIdx % callCaptions.length];
+        callCaptionIdx += 1;
+        queueCallPhase(callPhaseThinking, 2800);
+      }
+
+      function callPhaseThinking() {
+        if (!callActive || !activeContact) return;
+        setAvatarState(callAvatar, callAvatarMeta, "thinking", `${activeContact.name} 思考中`);
+        callStateEl.textContent = "正在组织回答";
+        callCaption.textContent = "实时转写: 对方正在组织回答...";
+        queueCallPhase(callPhaseSpeaking, 1100);
+      }
+
+      function callPhaseSpeaking() {
+        if (!callActive || !activeContact) return;
+        const replies = replyMap[activeContact.id] || replyMap.self;
+        const reply = replies[callSpeechIndex % replies.length];
+        callSpeechIndex += 1;
+        setAvatarState(callAvatar, callAvatarMeta, "speaking", `${activeContact.name} 在回答`);
+        callStateEl.textContent = "对方正在说话";
+        callCaption.textContent = `实时转写: ${reply}`;
+        queueCallPhase(callPhaseListening, 2600);
+      }
+
+      function startCallSession() {
+        if (callActive || !activeContact) return;
+        callActive = true;
+        ensureMic();
+        callDurationSec = 0;
+        callTimerEl.textContent = "00:00";
+        callStateEl.textContent = "语音通话已接通";
+        statusText.textContent = `与 ${activeContact.name} 通话中 · 00:00`;
+        callWaveTimer = setInterval(() => animateWave(callWaveBars), 220);
+        callDurationTimer = setInterval(() => {
+          callDurationSec += 1;
+          const t = formatDuration(callDurationSec);
+          callTimerEl.textContent = t;
+          statusText.textContent = `与 ${activeContact.name} 通话中 · ${t}`;
+        }, 1000);
+        callPhaseListening();
+      }
+
+      function stopCallListening() {
+        if (!callActive) {
+          clearCallPhaseTimers();
+          setWaveIdle(callWaveBars);
+          return;
+        }
+        callActive = false;
+        clearInterval(callWaveTimer);
+        clearInterval(callDurationTimer);
+        callWaveTimer = null;
+        callDurationTimer = null;
+        clearCallPhaseTimers();
+        setWaveIdle(callWaveBars);
+        callStateEl.textContent = "通话已结束";
+        if (activeContact) {
+          setAvatarState(callAvatar, callAvatarMeta, "idle", `${activeContact.name} 已离线`);
+        } else {
+          setAvatarState(callAvatar, callAvatarMeta, "idle", "待机中");
+        }
+      }
+
+      function openCall(contactId) {
+        stopCallListening();
+        const contact = contacts.find((item) => item.id === contactId);
+        if (!contact) return;
+        activeContact = contact;
+        callSpeechIndex = 0;
+        callCaptionIdx = 0;
+        showScreen("call");
+        callTitle.textContent = `与 ${contact.name} 通话中`;
+        callSub.textContent = "语音实时接通";
+        callTimerEl.textContent = "00:00";
+        callStateEl.textContent = "语音通话已接通";
+        callCaption.textContent = "实时转写: 通话已接通...";
+        setAvatarState(callAvatar, callAvatarMeta, "speaking", `${contact.name} 已接通`);
+        setTimeout(startCallSession, 450);
+      }
+
+      hangupBtn.addEventListener("click", () => {
+        stopCallListening();
+        activeContact = null;
+        openHome();
+      });
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const id = target.dataset.contactId;
+        if (!id) return;
+        openCall(id);
+      });
+
+      renderContacts();
+      renderSetupQuestion();
+      setWaveIdle(callWaveBars);
+      setAvatarState(setupAvatar, null, "listening");
+      setAvatarState(callAvatar, callAvatarMeta, "idle", "待机中");
+    </script>
+  </body>
+</html>
